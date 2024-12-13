@@ -9,14 +9,23 @@ from selenium.webdriver.chrome.service import Service
 
 # Sample form_data (this should be replaced with actual form data as required)
 form_data = {
-    "name": "John Doe",
-    "phone": "1234567890",
-    "email": "john.doe@example.com",
-    "address": "1234 Elm Street",
-    "city": "SomeCity",
-    "state": "SomeState",
-    "zip": "12345",
-    "message": "This is a sample request message"
+  "name": "Joshua Paschall",
+    "phone": "678-852-9027",
+    "email": "gwhpropertyrecords@gmail.com",
+    "address": "3715 Northside Pkwy NW, Bldg 100 Ste 500",
+    "city": "Tucker",
+    "state": "Georgia",
+    "zip": "30084",
+    "message": """My name is Joshua Paschall, and I am requesting records from the Code Enforcement Office.
+
+In accordance with the Georgia Open Records Act (O.C.G.A. § 50-18-70), I am requesting a list of all open code violations for residential properties over the past 30 days. Specifically, I am interested in violations related to damaged or decayed roofs, mold, broken windows, boarded-up windows and doors, overgrown weeds and grass, trash and debris, rodent infestations or unsanitary conditions, flaking or peeling paint, vacant and unsecured structures, and any buildings deemed dangerous, uninhabitable, or unfit for occupancy.
+
+Please provide the details of these violations, including the nature of the violation, the address of the property, and the date of the violation. If possible, I would appreciate receiving the information in a digital format, such as a .csv file or a searchable PDF. However, I am happy to accept the information in any format that is convenient for your office.
+
+Thank you for your assistance in this matter.
+
+Sincerely,
+Joshua Paschall"""
 }
 
 def fill_field(driver, wait, xpath, value):
