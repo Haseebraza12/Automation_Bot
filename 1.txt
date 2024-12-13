@@ -57,3 +57,16 @@
 /html/body/div[1]/div[3]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/input
 /html/body/div[1]/div[3]/main/div/div[1]/form/div[2]/div/div[7]/div[1]/input
 /html/body/div[1]/div[3]/main/div/div[1]/form/div[2]/div/div[8]/div[1]/textarea
+
+//link 8
+/html/body/main/div/main/section/div/div[1]/form/div[1]/div[2]/div[1]/div[2]/div/div[1] //description
+/html/body/main/div/main/section/div/div[1]/form/div[2]/div[1]/div/input email
+/html/body/main/div/main/section/div/div[1]/form/div[2]/div[2]/div/input name
+/html/body/main/div/main/section/div/div[1]/form/div[2]/div[3]/div/input phone
+/html/body/main/div/main/section/div/div[1]/form/div[2]/div[4]/div/textarea address
+/html/body/main/div/main/section/div/div[1]/form/div[2]/div[5]/div[1]/div/div/input city
+/html/body/main/div/main/section/div/div[1]/form/div[2]/div[5]/div[3]/div/div/input zip
+/html/body/main/div/main/section/div/div[1]/form/div[2]/div[5]/div[2]/div/div/div/select state
+/html/body/main/div/main/section/div/div[1]/form/div[2]/div[6]/div/input company
+/html/body/main/div/main/section/div/div[1]/form/div[3]/button
+
