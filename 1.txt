@@ -70,3 +70,12 @@
 /html/body/main/div/main/section/div/div[1]/form/div[2]/div[6]/div/input company
 /html/body/main/div/main/section/div/div[1]/form/div[3]/button
 
+//link 9
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div/div[1]/input date
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div/div[1]/input name
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div/div[1]/input email
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[12]/div/div[1]/input phone
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div/div[1]/input address
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[14]/div/div[1]/textarea
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[16]/div/div[1]/div/div/div/div/div/div/div
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button/div
