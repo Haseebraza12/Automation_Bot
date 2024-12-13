@@ -97,3 +97,6 @@
 
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[15]/div/div[1]/input state
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div/div[1]/textarea
+
+//link 12
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div/div[1]/input
