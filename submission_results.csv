@@ -1,26 +1,3 @@
-city,url,status,confirmation,error
-tucker,https://tuckerga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Failed,,"Message: 
-Stacktrace:
-	GetHandleVerifier [0x011034A3+25059]
-	(No symbol) [0x0108CEA4]
-	(No symbol) [0x00F6BEC3]
-	(No symbol) [0x00FAFD86]
-	(No symbol) [0x00FAFFCB]
-	(No symbol) [0x00FED952]
-	(No symbol) [0x00FD1F44]
-	(No symbol) [0x00FEB51E]
-	(No symbol) [0x00FD1C96]
-	(No symbol) [0x00FA3FAC]
-	(No symbol) [0x00FA4F3D]
-	GetHandleVerifier [0x013F5613+3113811]
-	GetHandleVerifier [0x0140A2DA+3199002]
-	GetHandleVerifier [0x01402AB2+3168242]
-	GetHandleVerifier [0x011A3310+680016]
-	(No symbol) [0x010957ED]
-	(No symbol) [0x01092A98]
-	(No symbol) [0x01092C35]
-	(No symbol) [0x01085890]
-	BaseThreadInitThunk [0x763DFCC9+25]
-	RtlGetAppContainerNamedObjectPath [0x77E8809E+286]
-	RtlGetAppContainerNamedObjectPath [0x77E8806E+238]
-"
+url,status,confirmation,error
+https://tuckerga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
+https://forestparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
