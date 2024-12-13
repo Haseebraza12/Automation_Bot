@@ -52,3 +52,8 @@
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[16]/div/div[1]/select
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div/div[1]/input
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[18]/div/div[1]/div/div/div/div/div/div/div
+
+//Link 7
+/html/body/div[1]/div[3]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/input
+/html/body/div[1]/div[3]/main/div/div[1]/form/div[2]/div/div[7]/div[1]/input
+/html/body/div[1]/div[3]/main/div/div[1]/form/div[2]/div/div[8]/div[1]/textarea
