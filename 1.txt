@@ -109,3 +109,9 @@
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[3]/div[1]/input email
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[12]/div[1]/select
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div[1]/div/div/div/div/div/div/div
+
+//link 15
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div[1]/input
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div[1]/input
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div[1]/textarea
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[12]/div[1]/div/div/div/div/div/div/div
