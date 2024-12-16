@@ -142,3 +142,6 @@
 
 //link 21
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/input
+
+//link 22
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div/div[1]/input
