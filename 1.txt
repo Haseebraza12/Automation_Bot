@@ -154,3 +154,6 @@
 
 //25
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/input
+
+// link 26
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div/div[1]/input
