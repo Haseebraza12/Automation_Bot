@@ -167,6 +167,9 @@
 //link 29
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/input
 
+//link 30
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div[1]/input
+
 
 //pdf 2
 // link 1
