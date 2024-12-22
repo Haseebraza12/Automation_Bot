@@ -1739,6 +1739,57 @@ def handle_hapevillega_form(driver, url):
         return {"status": "Failed", "error": str(e)}
 
 
+def handle_brookhavenga_form(driver, url):
+    try:
+        driver.get(url)
+        wait = WebDriverWait(driver, 20)
+
+        # Wait for page to load completely
+        time.sleep(7)
+
+        # Fill all fields
+        fields_to_fill = {
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[2]/div[1]/input": form_data["phone"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[3]/div[1]/input": form_data["email"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div[1]/input": form_data["address"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div[1]/input": form_data["city"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div[1]/input": form_data["state"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div[1]/input": form_data["zip"]
+        }
+
+        for xpath, value in fields_to_fill.items():
+            fill_field(driver, wait, xpath, value)
+
+        # Fill request details
+        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div[1]/textarea"
+        details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
+        details.clear()
+        details.send_keys(form_data["message"])
+        print("Filled request details")
+        #checkbox
+        checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div[1]/div/div/div/div/div/div/div"
+        for checkbox_xpath in [checkbox1_xpath]:
+            checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
+            driver.execute_script("arguments[0].click();", checkbox)
+            print(f"Checked {checkbox_xpath}")
+      
+
+        # Take screenshot before submission
+        driver.save_screenshot("before_submit.png")
+
+        # Submit form
+        submit_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button/div"
+        submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
+        driver.execute_script("arguments[0].click();", submit_button)
+        print("Clicked submit button")
+        time.sleep(5)
+        return {"status": "Success", "confirmation": "Form submitted"}
+
+    except Exception as e:
+        print(f"Error in form handling: {str(e)}")
+        driver.save_screenshot("error_main.png")
+        return {"status": "Failed", "error": str(e)}
 
 def save_results(results, filename="submission_results.csv"):
     try:
@@ -1787,7 +1838,8 @@ if __name__ == "__main__":
         "https://woodstockga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
         "https://eastpointga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
         "https://fairburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://hapevillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
+        "https://hapevillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
+        "https://brookhavenga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
     ]
 
     for url in urls:
@@ -1847,6 +1899,8 @@ if __name__ == "__main__":
             result = handle_fairburnga_form(driver, url)
         elif url == "https://hapevillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
             result = handle_hapevillega_form(driver, url)
+        elif url == "https://brookhavenga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+            result = handle_brookhavenga_form(driver, url)
         results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
 
     # Save results
