@@ -168,3 +168,9 @@
 //pdf 2
 // link 1
 /html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/input
+
+
+//pdf 3
+link 7
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[3]/div[1]/input
+/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div[1]/input

@@ -1,0 +1,4 @@
+1st pdf approximate 50 links after filtering 28 links were found to be workable
+2nd pdf  13 links are working properly
+3rd pdf 6 links  are wroking properly
+
