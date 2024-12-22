@@ -12,6 +12,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 # Sample form_data (this should be replaced with actual form data as required)
 form_data = {
     "date":"13/12/2024",
+    "time":"7:25 pm",
+    "person represented":"no",
+    "case number":"12",
   "name": "John Doe",
   "first name": "Joe",
     "last name":"Doe",
@@ -23,6 +26,8 @@ form_data = {
     "zip": "12345",
     "company":"no",
     "case":"no",
+    "unit number":"12",
+    "country":"USA",
     "message": """My name is John Doe, and I am requesting records from the Code Enforcement Office.
 
 In accordance with the [Insert Local Open Records Act], I am requesting a list of all open code violations for residential properties over the past 30 days. Specifically, I am interested in violations related to damaged or decayed roofs, mold, broken windows, boarded-up windows and doors, overgrown weeds and grass, trash and debris, rodent infestations or unsanitary conditions, flaking or peeling paint, vacant and unsecured structures, and any buildings deemed dangerous, uninhabitable, or unfit for occupancy.
