@@ -1223,6 +1223,239 @@ def handle_conyersga_form(driver, url):
         return {"status": "Failed", "error": str(e)}
 
 
+
+def handle_cityofgriffin_form(driver, url):
+    try:
+        driver.get(url)
+        wait = WebDriverWait(driver, 20)
+
+        # Wait for page to load completely
+        time.sleep(7)
+
+        # Fill all fields
+        fields_to_fill = {
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[1]/vi-form-field-edit/vi-field-fullname-edit/div/span[1]/input": form_data["first name"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[1]/vi-form-field-edit/vi-field-fullname-edit/div/span[2]/input": form_data["last name"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[4]/vi-form-field-edit/vi-field-email-edit/div/input": form_data["email"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[3]/vi-form-field-edit/vi-field-phone-edit/div/span/input": form_data["phone"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/div[2]/ol/li[2]/input": form_data["email"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[1]/input": form_data["address"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[2]/input": form_data["unit number"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[3]/span[1]/input": form_data["city"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[3]/span[2]/input": form_data["state"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[4]/input": form_data["zip"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[5]/input": form_data["country"]
+        }
+
+        for xpath, value in fields_to_fill.items():
+            fill_field(driver, wait, xpath, value)
+
+        # Fill request details
+        details_xpath = "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[5]/vi-form-field-edit/vi-field-paragraphtext-edit/div/textarea"
+        details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
+        details.clear()
+        details.send_keys(form_data["message"])
+        print("Filled request details")
+
+        # Handle dropdown selection
+        dropdown1_xpath = "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[6]/vi-form-field-edit/vi-field-singledropdown-edit/div/select"
+        dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
+        available_options = [o.text.strip() for o in dropdown1.options]
+        print("Available options in dropdown:", available_options)
+        dropdown1.select_by_visible_text("Yes")  # Adjust text as per available options
+        print("Selected dropdown option")
+      
+
+        # Take screenshot before submission
+        driver.save_screenshot("before_submit.png")
+
+        # Submit form
+        submit_xpath = "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/form-builder-submit-actions/div/a[2]"
+        submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
+        driver.execute_script("arguments[0].click();", submit_button)
+        print("Clicked submit button")
+        time.sleep(5)
+        return {"status": "Success", "confirmation": "Form submitted"}
+
+    except Exception as e:
+        print(f"Error in form handling: {str(e)}")
+        driver.save_screenshot("error_main.png")
+        return {"status": "Failed", "error": str(e)}
+
+
+
+def handle_henrycounty_form(driver, url):
+    try:
+        driver.get(url)
+        wait = WebDriverWait(driver, 20)
+
+        # Wait for page to load completely
+        time.sleep(7)
+
+        # Fill all fields
+        fields_to_fill = {
+            "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[3]/div/div/div/div[3]/div/div/div[2]/div/input": form_data["first name"],
+            "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[3]/div/div/div/div[4]/div/div/div[2]/div/input": form_data["last name"],
+            "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[3]/div/div/div/div[6]/div/div/div[2]/div/input": form_data["email"],
+            "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[3]/div/div/div/div[11]/div/div/div[2]/div/input": form_data["phone"],
+            "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[3]/div/div/div/div[7]/div/div/div[2]/div/input": form_data["address"],
+            "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[3]/div/div/div/div[8]/div/div/div[2]/div/input": form_data["city"],
+            "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[3]/div/div/div/div[9]/div/div/div[2]/div/input": form_data["state"],
+            "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[3]/div/div/div/div[10]/div/div/div[2]/div/input": form_data["zip"],
+          
+        }
+
+        for xpath, value in fields_to_fill.items():
+            fill_field(driver, wait, xpath, value)
+
+        # Fill request details
+        details_xpath = "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[3]/div/div/div/div[13]/div/div/div[2]/textarea[1]"
+        details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
+        details.clear()
+        details.send_keys(form_data["message"])
+        print("Filled request details")
+
+        # Take screenshot before submission
+        driver.save_screenshot("before_submit.png")
+
+        # Submit form
+        submit_xpath = "/html/body/div/ob-bottom-navigation/div/div[1]/section/div/div/form/div/div[4]/button[2]/span/span"
+        submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
+        driver.execute_script("arguments[0].click();", submit_button)
+        print("Clicked submit button")
+        time.sleep(5)
+        return {"status": "Success", "confirmation": "Form submitted"}
+
+    except Exception as e:
+        print(f"Error in form handling: {str(e)}")
+        driver.save_screenshot("error_main.png")
+        return {"status": "Failed", "error": str(e)}
+
+
+def handle_formsite_form(driver, url):
+    try:
+        driver.get(url)
+        wait = WebDriverWait(driver, 20)
+
+        # Wait for page to load completely
+        time.sleep(7)
+
+        # Fill all fields
+        fields_to_fill = {
+            "/html/body/form/div[2]/div[6]/input": form_data["date"],
+            "/html/body/form/div[2]/div[9]/input": form_data["name"],
+            "/html/body/form/div[2]/div[22]/input": form_data["phone"],
+            "/html/body/form/div[2]/div[21]/input": form_data["email"],
+            "/html/body/form/div[2]/div[14]/input": form_data["address"],
+            "//html/body/form/div[2]/div[17]/input": form_data["city"],
+            "/html/body/form/div[2]/div[19]/input": form_data["zip"],
+            "/html/body/form/div[2]/div[30]/input": form_data["date"],
+            "/html/body/form/div[2]/div[40]/input": form_data["address"],
+            "/html/body/form/div[2]/div[42]/input": form_data["city"],
+            "/html/body/form/div[2]/div[44]/input": form_data["zip"],
+        }
+
+        for xpath, value in fields_to_fill.items():
+            fill_field(driver, wait, xpath, value)
+
+        # Fill request details
+        details_xpath = "/html/body/form/div[2]/div[26]/textarea"
+        details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
+        details.clear()
+        details.send_keys(form_data["message"])
+        print("Filled request details")
+
+        # Handle first dropdown
+        try:
+            dropdown0_xpath = "/html/body/form/div[2]/div[24]/select"
+            dropdown0 = wait.until(EC.presence_of_element_located((By.XPATH, dropdown0_xpath)))
+            select0 = Select(dropdown0)
+            
+            # Wait for options to load
+            time.sleep(2)
+            
+            # Get available options
+            options = [o for o in select0.options if o.text.strip()]
+            if options:
+                select0.select_by_visible_text(options[-1].text)  # Select last non-empty option
+                print(f"Selected {options[-1].text} from first dropdown")
+            else:
+                print("No valid options found in first dropdown")
+                
+        except Exception as e:
+            print(f"Error handling first dropdown: {str(e)}")
+            driver.save_screenshot("dropdown0_error.png")
+
+        # Handle state dropdowns
+        for dropdown_xpath in ["/html/body/form/div[2]/div[18]/select", 
+                             "/html/body/form/div[2]/div[43]/select"]:
+            try:
+                dropdown = wait.until(EC.presence_of_element_located((By.XPATH, dropdown_xpath)))
+                select = Select(dropdown)
+                
+                # Wait for options to load
+                time.sleep(2)
+                
+                # Try multiple selection methods
+                try:
+                    select.select_by_visible_text("Alabama")
+                except:
+                    try:
+                        select.select_by_value("AL")
+                    except:
+                        try:
+                            # Get all non-empty options
+                            options = [o for o in select.options if o.text.strip()]
+                            if options:
+                                select.select_by_visible_text(options[1].text)  # Select first non-empty option
+                            else:
+                                print(f"No valid options found in dropdown {dropdown_xpath}")
+                        except:
+                            print(f"Could not select state in dropdown {dropdown_xpath}")
+                            
+                print(f"Handled state selection for {dropdown_xpath}")
+                
+            except Exception as e:
+                print(f"Error handling state dropdown {dropdown_xpath}: {str(e)}")
+                driver.save_screenshot(f"dropdown_error_{dropdown_xpath.replace('/', '_')}.png")
+
+        # Handle checkboxes
+        checkbox_xpaths = [
+            "/html/body/form/div[2]/div[7]/table/tbody/tr[2]/td/label",
+            "/html/body/form/div[2]/div[31]/table/tbody/tr[1]/td/label",
+            "/html/body/form/div[2]/div[33]/table/tbody/tr[1]/td/label",
+            "/html/body/form/div[2]/div[35]/table/tbody/tr[1]/td/label"
+        ]
+        
+        for checkbox_xpath in checkbox_xpaths:
+            try:
+                checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
+                driver.execute_script("arguments[0].click();", checkbox)
+                print(f"Checked {checkbox_xpath}")
+                time.sleep(1)  # Add small delay between checkbox clicks
+            except Exception as e:
+                print(f"Error checking checkbox {checkbox_xpath}: {str(e)}")
+                driver.save_screenshot(f"checkbox_error_{checkbox_xpath.replace('/', '_')}.png")
+
+        # Take screenshot before submission
+        driver.save_screenshot("before_submit.png")
+        
+        # Submit form
+        submit_xpath = "/html/body/form/div[3]/div/input"
+        submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
+        driver.execute_script("arguments[0].click();", submit_button)
+        print("Clicked submit button")
+        
+        # Wait for submission to complete
+        time.sleep(5)
+        return {"status": "Success", "confirmation": "Form submitted"}
+
+    except Exception as e:
+        print(f"Error in form handling: {str(e)}")
+        driver.save_screenshot("error_main.png")
+        return {"status": "Failed", "error": str(e)}
+
+
 def save_results(results, filename="submission3_results.csv"):
     try:
         with open(filename, 'w', newline='', encoding='utf-8') as f:
@@ -1262,10 +1495,9 @@ if __name__ == "__main__":
          "https://forestparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
          "https://roswellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
          "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-
-
-
-
+         "https://www.cityofgriffin.com/services/open-records",
+         "https://henrycounty-services.app.transform.civicplus.com/forms/34175",
+         "https://fs6.formsite.com/mAFRD/jiupubq3at/index.html"
         
 
     ]
@@ -1313,6 +1545,12 @@ if __name__ == "__main__":
             result = handle_roswellga_form(driver, url)
         elif url == "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
             result = handle_conyersga_form(driver, url)
+        elif url == "https://www.cityofgriffin.com/services/open-records":
+            result = handle_cityofgriffin_form(driver, url)
+        elif url == "https://henrycounty-services.app.transform.civicplus.com/forms/34175":
+            result = handle_henrycounty_form(driver, url)
+        elif url == "https://fs6.formsite.com/mAFRD/jiupubq3at/index.html":
+            result = handle_formsite_form(driver, url)
         results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
 
     # Save results

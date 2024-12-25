@@ -1979,6 +1979,65 @@ def handle_lilburnga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+    
+
+def handle_cityofgriffin_form(driver, url):
+    try:
+        driver.get(url)
+        wait = WebDriverWait(driver, 20)
+
+        # Wait for page to load completely
+        time.sleep(7)
+
+        # Fill all fields
+        fields_to_fill = {
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[1]/vi-form-field-edit/vi-field-fullname-edit/div/span[1]/input": form_data["first name"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[1]/vi-form-field-edit/vi-field-fullname-edit/div/span[2]/input": form_data["last name"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[4]/vi-form-field-edit/vi-field-email-edit/div/input": form_data["email"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[3]/vi-form-field-edit/vi-field-phone-edit/div/span/input": form_data["phone"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/div[2]/ol/li[2]/input": form_data["email"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[1]/input": form_data["address"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[2]/input": form_data["unit number"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[3]/span[1]/input": form_data["city"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[3]/span[2]/input": form_data["state"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[4]/input": form_data["zip"],
+            "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[2]/vi-form-field-edit/vi-field-fulladdress-edit/div/span[5]/input": form_data["country"]
+        }
+
+        for xpath, value in fields_to_fill.items():
+            fill_field(driver, wait, xpath, value)
+
+        # Fill request details
+        details_xpath = "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[5]/vi-form-field-edit/vi-field-paragraphtext-edit/div/textarea"
+        details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
+        details.clear()
+        details.send_keys(form_data["message"])
+        print("Filled request details")
+
+        # Handle dropdown selection
+        dropdown1_xpath = "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/div/form-builder-submit-pagination/div/div[6]/vi-form-field-edit/vi-field-singledropdown-edit/div/select"
+        dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
+        available_options = [o.text.strip() for o in dropdown1.options]
+        print("Available options in dropdown:", available_options)
+        dropdown1.select_by_visible_text("Yes")  # Adjust text as per available options
+        print("Selected dropdown option")
+      
+
+        # Take screenshot before submission
+        driver.save_screenshot("before_submit.png")
+
+        # Submit form
+        submit_xpath = "/html/body/div[2]/div/div[2]/div[3]/div[2]/section/div/form/div/form-builder-submit-actions/div/a[2]"
+        submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
+        driver.execute_script("arguments[0].click();", submit_button)
+        print("Clicked submit button")
+        time.sleep(5)
+        return {"status": "Success", "confirmation": "Form submitted"}
+
+    except Exception as e:
+        print(f"Error in form handling: {str(e)}")
+        driver.save_screenshot("error_main.png")
+        return {"status": "Failed", "error": str(e)}
 
 def save_results(results, filename="submission_results.csv"):
     try:
@@ -2031,7 +2090,8 @@ if __name__ == "__main__":
         "https://brookhavenga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
         "https://duluthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
         "https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6",
-        "https://lilburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
+        "https://lilburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
+        "https://www.cityofgriffin.com/services/open-records"
     ]
 
     for url in urls:
@@ -2099,6 +2159,8 @@ if __name__ == "__main__":
             result = handle_norcrossga_form(driver, url)
         elif url == "https://lilburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
             result = handle_lilburnga_form(driver, url)
+        elif url == "https://www.cityofgriffin.com/services/open-records":
+            result = handle_cityofgriffin_form(driver, url)
         results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
 
     # Save results
