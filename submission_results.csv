@@ -32,4 +32,27 @@ https://brookhavenga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87
 https://duluthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
 https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6,Success,Form submitted,
 https://lilburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
-https://www.cityofgriffin.com/services/open-records,Success,Form submitted,
+https://www.cityofgriffin.com/services/open-records,Failed,,"Message: 
+Stacktrace:
+	GetHandleVerifier [0x00007FF762866CF5+28821]
+	(No symbol) [0x00007FF7627D3880]
+	(No symbol) [0x00007FF76267578A]
+	(No symbol) [0x00007FF7626C91BE]
+	(No symbol) [0x00007FF7626C94AC]
+	(No symbol) [0x00007FF762712647]
+	(No symbol) [0x00007FF7626EF33F]
+	(No symbol) [0x00007FF76270F412]
+	(No symbol) [0x00007FF7626EF0A3]
+	(No symbol) [0x00007FF7626BA778]
+	(No symbol) [0x00007FF7626BB8E1]
+	GetHandleVerifier [0x00007FF762B9FCED+3408013]
+	GetHandleVerifier [0x00007FF762BB745F+3504127]
+	GetHandleVerifier [0x00007FF762BAB63D+3455453]
+	GetHandleVerifier [0x00007FF76292BDFB+835995]
+	(No symbol) [0x00007FF7627DEB9F]
+	(No symbol) [0x00007FF7627DA854]
+	(No symbol) [0x00007FF7627DA9ED]
+	(No symbol) [0x00007FF7627CA1D9]
+	BaseThreadInitThunk [0x00007FF876257374+20]
+	RtlUserThreadStart [0x00007FF8776BCC91+33]
+"
