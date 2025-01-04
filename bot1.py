@@ -45,15 +45,30 @@ John Doe"""
 def create_driver():
     # Set Chrome options
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless")  # Run Chrome in headless mode
+    chrome_options.add_argument("--headless=new")  # Use the latest headless mode
     chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
     chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
     chrome_options.add_argument("--window-size=1920x1080")  # Set window size to avoid detection issues
+    
+    # Optimize performance
+    chrome_options.add_argument("--disable-extensions")  # Disable extensions to speed up
+    chrome_options.add_argument("--disable-gpu")  # Disable GPU for headless mode
+    chrome_options.add_argument("--disable-software-rasterizer")  # Avoid software rendering
+    chrome_options.add_argument("--blink-settings=imagesEnabled=false")  # Disable loading images
+    chrome_options.add_argument("--enable-automation")  # Indicate automation use
+    chrome_options.add_argument("--disable-infobars")  # Disable 'Chrome is being controlled' message
+    
+    # Additional security & detection prevention
+    chrome_options.add_argument("--disable-popup-blocking")  # Prevent blocking popups
+    chrome_options.add_argument("--incognito")  # Run in incognito mode for cleaner sessions
+    chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36")  # Set user agent to reduce detection
 
-    return webdriver.Chrome(options=chrome_options)  # Return the initialized driver
-
+    # Enable logging for debugging purposes (optional)
+    chrome_options.add_argument("--log-level=3")  # Minimize logging output (DEBUG=0, INFO=1, WARNING=2, ERROR=3)
+    
+    # Return the initialized driver
+    return webdriver.Chrome(options=chrome_options)
 def fill_field(driver, wait, xpath, value):
-  
     try:
         field = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
         field.clear()
@@ -61,9 +76,7 @@ def fill_field(driver, wait, xpath, value):
         print(f"Filled field at {xpath} with value: {value}")
     except Exception as e:
         print(f"Error filling field at {xpath}: {str(e)}")
-
 def handle_tucker_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -71,11 +84,18 @@ def handle_tucker_form(driver, url):
         # Wait for page to load completely
         time.sleep(7)
 
+          # Handle dropdown selection
+        dropdown0_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div/div[1]/select"
+        dropdown0 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown0_xpath))))
+        available_options = [o.text for o in dropdown0.options]
+        print("Available options in dropdown:", available_options)
+        dropdown0.select_by_visible_text("Phone")  # Adjust text if necessary
+        print("Selected 'Other inquiries' from dropdown")
+
         # Fill all fields
         fields_to_fill = {
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div/div[1]/input": form_data["name"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div/div[1]/input": form_data["phone"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div/div[1]/input": form_data["email"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div/div[1]/input": form_data["phone"],
             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div/div[1]/input": form_data["address"],
             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div/div[1]/input": form_data["city"],
             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div/div[1]/input": form_data["state"],
@@ -84,6 +104,13 @@ def handle_tucker_form(driver, url):
 
         for xpath, value in fields_to_fill.items():
             fill_field(driver, wait, xpath, value)
+        
+        dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div/div[1]/select"
+        dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
+        available_options = [o.text for o in dropdown1.options]
+        print("Available options in dropdown:", available_options)
+        dropdown1.select_by_visible_text("Other inquiries")  # Adjust text if necessary
+        print("Selected 'Other inquiries' from dropdown")
 
         # Fill request details
         details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[12]/div/div[1]/textarea"
@@ -91,14 +118,6 @@ def handle_tucker_form(driver, url):
         details.clear()
         details.send_keys(form_data["message"])
         print("Filled request details")
-
-        # Handle dropdown selection
-        dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div/div[1]/select"
-        dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
-        available_options = [o.text for o in dropdown1.options]
-        print("Available options in dropdown:", available_options)
-        dropdown1.select_by_visible_text("Other inquiries")  # Adjust text if necessary
-        print("Selected 'Other inquiries' from dropdown")
 
         # Handle checkboxes
         checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[15]/div/div[1]/div/div/div/div/div/div/div"
@@ -112,7 +131,7 @@ def handle_tucker_form(driver, url):
         driver.save_screenshot("before_submit.png")
 
         # Submit form
-        submit_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button"
+        submit_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button/div"
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
@@ -123,10 +142,7 @@ def handle_tucker_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 def handle_forestparkga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -178,11 +194,8 @@ def handle_forestparkga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_austellga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -234,11 +247,8 @@ def handle_austellga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_acworthga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -290,11 +300,8 @@ def handle_acworthga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_doravillega_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -346,11 +353,10 @@ def handle_doravillega_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+   
 
 def handle_albanyga_form(driver, url):
-    driver = create_driver()
+ 
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -408,11 +414,10 @@ def handle_albanyga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+  
 
 def handle_riverdalega_form(driver, url):
-    driver = create_driver()
+   
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -464,11 +469,9 @@ def handle_riverdalega_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+
 
 def handle_cityofmorrowga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -522,12 +525,8 @@ def handle_cityofmorrowga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
-
 
 def handle_kennesawga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -578,11 +577,8 @@ def handle_kennesawga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_smyrnaga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -635,11 +631,8 @@ def handle_smyrnaga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_tyronega_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 30)
@@ -695,11 +688,10 @@ def handle_tyronega_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+   
 
 def handle_forsythcountyga_form(driver, url):
-    driver = create_driver()
+ 
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -757,12 +749,9 @@ def handle_forsythcountyga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 
 def handle_collegeparkga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -814,11 +803,8 @@ def handle_collegeparkga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
-    
+
 def handle_powderspringsga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -876,11 +862,8 @@ def handle_powderspringsga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_conyersga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -931,11 +914,8 @@ def handle_conyersga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_spaldingcountyga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -987,11 +967,8 @@ def handle_spaldingcountyga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_stockbridgega_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1045,11 +1022,8 @@ def handle_stockbridgega_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_cityofstonecrestga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1147,12 +1121,9 @@ def handle_cityofstonecrestga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)} 
-    finally:
-        driver.quit()
 
 
 def handle_peachtreecitygapolice_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1194,6 +1165,9 @@ def handle_peachtreecitygapolice_form(driver, url):
                     # Handle dropdown selection (corrected)
         dropdown2_xpath = "/html/body/main/div/main/section/div/div[1]/form/div[1]/div[4]/div/div/div/div/div[1]/input"
         dropdown2 = wait.until(EC.presence_of_element_located((By.XPATH, dropdown2_xpath)))
+
+
+
    # Clear the dropdown input field
         dropdown2.clear()
 
@@ -1228,11 +1202,8 @@ def handle_peachtreecitygapolice_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_cityofclarkstonga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1323,11 +1294,9 @@ def handle_cityofclarkstonga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_cantonga_form(driver, url):
-    driver = create_driver()
+
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1380,11 +1349,9 @@ def handle_cantonga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+  
 
 def handle_maconbibbcountyga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1436,11 +1403,10 @@ def handle_maconbibbcountyga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+
 
 def handle_cherokeecountyga_form(driver, url):
-    driver = create_driver()
+
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1482,6 +1448,9 @@ def handle_cherokeecountyga_form(driver, url):
                     # Handle dropdown selection (corrected)
         dropdown2_xpath = "/html/body/main/div/main/section/div/div[1]/form/div[1]/div[4]/div/div/div/div/div[1]/input"
         dropdown2 = wait.until(EC.presence_of_element_located((By.XPATH, dropdown2_xpath)))
+
+
+
    # Clear the dropdown input field
         dropdown2.clear()
 
@@ -1507,11 +1476,7 @@ def handle_cherokeecountyga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
-
 def handle_cityofaugustaga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1571,11 +1536,7 @@ def handle_cityofaugustaga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
-
 def handle_woodstockga_form(driver, url):
-    driver = create_driver()
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1628,11 +1589,9 @@ def handle_woodstockga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
 
 def handle_eastpointga_form(driver, url):
-    driver = create_driver()
+
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1684,11 +1643,9 @@ def handle_eastpointga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
-
+    
 def handle_fairburnga_form(driver, url):
-    driver = create_driver()
+  
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1739,11 +1696,10 @@ def handle_fairburnga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+    
 
 def handle_hapevillega_form(driver, url):
-    driver = create_driver()
+  
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1803,11 +1759,10 @@ def handle_hapevillega_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+   
 
 def handle_brookhavenga_form(driver, url):
-    driver = create_driver()
+  
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1858,11 +1813,9 @@ def handle_brookhavenga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
-
+    
 def handle_duluthga_form(driver, url):
-    driver = create_driver()
+   
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1918,11 +1871,9 @@ def handle_duluthga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
-
+  
 def handle_norcrossga_form(driver, url):
-    driver = create_driver()
+   
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -1983,11 +1934,10 @@ def handle_norcrossga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+  
 
 def handle_lilburnga_form(driver, url):
-    driver = create_driver()
+
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -2045,14 +1995,14 @@ def handle_lilburnga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
+    
 
 def handle_cityofgriffin_form(driver, url):
-    driver=create_driver()
+    
     try:
         driver.get(url)
-        wait = WebDriverWait(driver, 30)
+        wait = WebDriverWait(driver, 20)
+
         # Wait for page to load completely
         time.sleep(7)
 
@@ -2105,9 +2055,7 @@ def handle_cityofgriffin_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    finally:
-        driver.quit()
-
+  
 def save_results(results, filename="submission_results.csv"):
     try:
         with open(filename, 'w', newline='', encoding='utf-8') as f:
@@ -2123,8 +2071,8 @@ if __name__ == "__main__":
     # Corrected WebDriver initialization
     #service = Service(executable_path='chromedriver.exe')  # Replace with your WebDriver path
     #driver = webdriver.Chrome(service=service)
+    driver = create_driver() 
     results = []
-    driver = create_driver()
 
     # List of URLs for the forms
     urls = [
