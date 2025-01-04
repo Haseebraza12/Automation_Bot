@@ -42,6 +42,32 @@ Thank you for your assistance in this matter.
 Sincerely,
 John Doe"""
 }
+def create_driver():
+    # Set Chrome options
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("--headless=new")  # Use the latest headless mode
+    chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+    chrome_options.add_argument("--window-size=1920x1080")  # Set window size to avoid detection issues
+    
+    # Optimize performance
+    chrome_options.add_argument("--disable-extensions")  # Disable extensions to speed up
+    chrome_options.add_argument("--disable-gpu")  # Disable GPU for headless mode
+    chrome_options.add_argument("--disable-software-rasterizer")  # Avoid software rendering
+    chrome_options.add_argument("--blink-settings=imagesEnabled=false")  # Disable loading images
+    chrome_options.add_argument("--enable-automation")  # Indicate automation use
+    chrome_options.add_argument("--disable-infobars")  # Disable 'Chrome is being controlled' message
+    
+    # Additional security & detection prevention
+    chrome_options.add_argument("--disable-popup-blocking")  # Prevent blocking popups
+    chrome_options.add_argument("--incognito")  # Run in incognito mode for cleaner sessions
+    chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36")  # Set user agent to reduce detection
+
+    # Enable logging for debugging purposes (optional)
+    chrome_options.add_argument("--log-level=3")  # Minimize logging output (DEBUG=0, INFO=1, WARNING=2, ERROR=3)
+    
+    # Return the initialized driver
+    return webdriver.Chrome(options=chrome_options)
 
 def fill_field(driver, wait, xpath, value):
     try:
@@ -1468,9 +1494,7 @@ def save_results(results, filename="submission3_results.csv"):
 
 
 if __name__ == "__main__":
-    # Corrected WebDriver initialization
-    service = Service(executable_path='C:/Users/Haseeb Raza/Desktop/BOT/chromedriver.exe')  # Replace with your WebDriver path
-    driver = webdriver.Chrome(service=service)
+    driver = create_driver() 
     results = []
 
     # List of URLs for the forms
