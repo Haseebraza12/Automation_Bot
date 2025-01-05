@@ -1576,7 +1576,7 @@ def save_results(results, filename="submission2_results.csv"):
 
 def process_form(url):
     driver = create_driver()
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 20)
     driver.get(url)
     
     try:
