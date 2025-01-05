@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+import concurrent.futures
 
 # Sample form_data (this should be replaced with actual form data as required)
 form_data = {
@@ -2047,33 +2048,113 @@ def handle_cityofgriffin_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-  
-def save_results(results, filename="submission_results.csv"):
-    try:
-        with open(filename, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=['url', 'status', 'confirmation', 'error'])
-            writer.writeheader()
-            writer.writerows(results)
-        print(f"Results saved to {filename}")
-    except Exception as e:
-        print(f"Error saving results: {e}")
+    
 
+def process_form(url, retries=3):
+    for attempt in range(retries):
+        driver = create_driver()
+        wait = WebDriverWait(driver, 20)
+        driver.get(url)
+        
+        try:
+            if url == "https://tuckerga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_tucker_form(driver, url)
+            elif url == "https://forestparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_forestparkga_form(driver, url)
+            elif url == "https://austellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_austellga_form(driver, url)
+            elif url == "https://acworthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_acworthga_form(driver, url)
+            elif url == "https://doravillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_doravillega_form(driver, url)
+            elif url == "https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_albanyga_form(driver, url)
+            elif url == "https://riverdalega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_riverdalega_form(driver, url)
+            elif url == "https://cityofmorrowga.nextrequest.com/requests/new":
+                result = handle_cityofmorrowga_form(driver, url)
+            elif url == "https://kennesawga.justfoia.com/Forms/Launch/a3570e65-d44d-43d3-a822-d38e2fc1c3d3":
+                result = handle_kennesawga_form(driver, url)
+            elif url == "https://smyrnaga.justfoia.com/Forms/Launch/fd208f47-7557-4edf-9478-723c87ba6b30":
+                result = handle_smyrnaga_form(driver, url)
+            elif url == "https://tyronega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_tyronega_form(driver, url)
+            elif url == "https://forsythcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_forsythcountyga_form(driver, url)
+            elif url == "https://collegeparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_collegeparkga_form(driver, url)
+            elif url == "https://powderspringsga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_powderspringsga_form(driver, url)
+            elif url == "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_conyersga_form(driver, url)
+            elif url == "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_spaldingcountyga_form(driver, url)
+            elif url == "https://stockbridgega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_stockbridgega_form(driver, url)
+            elif url == "https://cityofstonecrestga.nextrequest.com/requests/new":
+                result = handle_cityofstonecrestga_form(driver, url)
+            elif url == "https://peachtreecitygapolice.nextrequest.com/requests/new":
+                result = handle_peachtreecitygapolice_form(driver, url)
+            elif url == "https://cityofclarkstonga.nextrequest.com/requests/new":
+                result = handle_cityofclarkstonga_form(driver, url)
+            elif url == "https://cantonga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_cantonga_form(driver, url)
+            elif url == "https://maconbibbcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_maconbibbcountyga_form(driver, url)
+            elif url == "https://cherokeecountyga.nextrequest.com/requests/new":
+                result = handle_cherokeecountyga_form(driver, url)
+            elif url == "https://cityofaugustaga.nextrequest.com/requests/new":
+                result = handle_cityofaugustaga_form(driver, url)
+            elif url == "https://woodstockga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_woodstockga_form(driver, url)
+            elif url == "https://eastpointga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_eastpointga_form(driver, url)
+            elif url == "https://fairburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_fairburnga_form(driver, url)
+            elif url == "https://hapevillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_hapevillega_form(driver, url)
+            elif url == "https://brookhavenga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_brookhavenga_form(driver, url)
+            elif url == "https://duluthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_duluthga_form(driver, url)
+            elif url == "https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6":
+                result = handle_norcrossga_form(driver, url)
+            elif url == "https://lilburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_lilburnga_form(driver, url)
+            elif url == "https://www.cityofgriffin.com/services/open-records":
+                result = handle_cityofgriffin_form(driver, url)
+            else:
+                result = {"status": "unknown", "confirmation": "", "error": "Unknown URL"}
+            
+            return result
+        except Exception as e:
+            print(f"Attempt {attempt + 1} failed for {url}: {str(e)}")
+            result = {"status": "failed", "confirmation": "", "error": str(e)}
+            time.sleep(5)  # Wait before retrying
+        finally:
+            driver.quit()
+    
+    return result
+
+def save_results(results, filename="submission_results.csv"):
+    import csv
+    keys = results[0].keys()
+    with open(filename, 'w', newline='') as output_file:
+        dict_writer = csv.DictWriter(output_file, fieldnames=keys)
+        dict_writer.writeheader()
+        dict_writer.writerows(results)
 
 if __name__ == "__main__":
-    # Corrected WebDriver initialization
-    #service = Service(executable_path='chromedriver.exe')  # Replace with your WebDriver path
-    #driver = webdriver.Chrome(service=service)
-    driver = create_driver() 
     results = []
 
     # List of URLs for the forms
     urls = [
-        "https://tuckerga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",  # Replace with the actual URL for Tucker form
+        "https://tuckerga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
         "https://forestparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
         "https://austellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
         "https://acworthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-         "https://doravillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-          "https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
+        "https://doravillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
+        "https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
         "https://riverdalega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
         "https://cityofmorrowga.nextrequest.com/requests/new",
         "https://kennesawga.justfoia.com/Forms/Launch/a3570e65-d44d-43d3-a822-d38e2fc1c3d3",
@@ -2104,79 +2185,15 @@ if __name__ == "__main__":
         "https://www.cityofgriffin.com/services/open-records"
     ]
 
-    for url in urls:
-        if url == "https://tuckerga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_tucker_form(driver, url)
-        elif url == "https://forestparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_forestparkga_form(driver, url)
-        elif url == "https://austellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_austellga_form(driver, url)
-        elif url == "https://acworthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_acworthga_form(driver, url)
-        elif url == "https://doravillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_doravillega_form(driver, url)
-        elif url == "https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_albanyga_form(driver, url)
-        elif url == "https://riverdalega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_riverdalega_form(driver, url)
-        elif url == "https://cityofmorrowga.nextrequest.com/requests/new":
-            result = handle_cityofmorrowga_form(driver, url)
-        elif url == "https://kennesawga.justfoia.com/Forms/Launch/a3570e65-d44d-43d3-a822-d38e2fc1c3d3":
-            result = handle_kennesawga_form(driver, url)
-        elif url == "https://smyrnaga.justfoia.com/Forms/Launch/fd208f47-7557-4edf-9478-723c87ba6b30":
-            result = handle_smyrnaga_form(driver, url)
-        elif url == "https://tyronega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_tyronega_form(driver, url)
-        elif url == "https://forsythcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_forsythcountyga_form(driver, url)
-        elif url == "https://collegeparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_collegeparkga_form(driver, url)
-        elif url == "https://powderspringsga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_powderspringsga_form(driver, url)
-        elif url == "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_conyersga_form(driver, url)
-        elif url == "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_spaldingcountyga_form(driver, url)
-        elif url == "https://stockbridgega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_stockbridgega_form(driver, url)
-        elif url == "https://cityofstonecrestga.nextrequest.com/requests/new":
-            result = handle_cityofstonecrestga_form(driver, url)
-        elif url == "https://peachtreecitygapolice.nextrequest.com/requests/new":
-            result = handle_peachtreecitygapolice_form(driver, url)
-        elif url == "https://cityofclarkstonga.nextrequest.com/requests/new":
-            result = handle_cityofclarkstonga_form(driver, url)
-        elif url == "https://cantonga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_cantonga_form(driver, url)
-        elif url == "https://maconbibbcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_maconbibbcountyga_form(driver, url)
-        elif url == "https://cherokeecountyga.nextrequest.com/requests/new":
-            result = handle_cherokeecountyga_form(driver, url)
-        elif url == "https://cityofaugustaga.nextrequest.com/requests/new":
-            result = handle_cityofaugustaga_form(driver, url)
-        elif url == "https://woodstockga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_woodstockga_form(driver, url)
-        elif url == "https://eastpointga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_eastpointga_form(driver, url)
-        elif url == "https://fairburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_fairburnga_form(driver, url)
-        elif url == "https://hapevillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_hapevillega_form(driver, url)
-        elif url == "https://brookhavenga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_brookhavenga_form(driver, url)
-        elif url == "https://duluthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_duluthga_form(driver, url)
-        elif url == "https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6":
-            result = handle_norcrossga_form(driver, url)
-        elif url == "https://lilburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_lilburnga_form(driver, url)
-        elif url == "https://www.cityofgriffin.com/services/open-records":
-            result = handle_cityofgriffin_form(driver, url)
-        results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future_to_url = {executor.submit(process_form, url): url for url in urls}
+        for future in concurrent.futures.as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                result = future.result()
+                results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
+            except Exception as e:
+                results.append({"url": url, "status": "failed", "confirmation": "", "error": str(e)})
 
     # Save results
     save_results(results)
-
-    # Close the driver
-    driver.quit()
-    
-
