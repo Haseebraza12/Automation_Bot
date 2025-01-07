@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import concurrent.futures
-
+from tqdm import tqdm
 # Sample form_data (this should be replaced with actual form data as required)
 form_data = {
     "date":"13/12/2024",
@@ -1681,7 +1681,7 @@ if __name__ == "__main__":
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_url = {executor.submit(process_form, url): url for url in urls}
-        for future in concurrent.futures.as_completed(future_to_url):
+        for future in tqdm(concurrent.futures.as_completed(future_to_url), total=len(future_to_url), desc="Processing forms"):
             url = future_to_url[future]
             try:
                 result = future.result()
