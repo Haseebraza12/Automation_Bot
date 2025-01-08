@@ -10,6 +10,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import concurrent.futures
 from tqdm import tqdm
+import tkinter as tk
+from tkinter import ttk
+import threading
 # Sample form_data (this should be replaced with actual form data as required)
 form_data = {
     "date":"13/12/2024",
@@ -1647,6 +1650,28 @@ def save_results(results, filename="submission2_results.csv"):
         dict_writer.writeheader()
         dict_writer.writerows(results)
 
+def update_progress_bar(progress_bar, progress_var, value):
+    progress_var.set(value)
+    progress_bar.update_idletasks()
+
+def run_processing(urls, results, progress_bar, progress_var):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future_to_url = {executor.submit(process_form, url): url for url in urls}
+        for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
+            url = future_to_url[future]
+            try:
+                result = future.result()
+                results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
+            except Exception as e:
+                results.append({"url": url, "status": "failed", "confirmation": "", "error": str(e)})
+            update_progress_bar(progress_bar, progress_var, i + 1)
+
+    # Save results
+    save_results(results)
+
+    # Close the GUI window
+    root.quit()
+
 if __name__ == "__main__":
     results = []
 
@@ -1671,23 +1696,29 @@ if __name__ == "__main__":
         "https://sandyspringsga.justfoia.com/Forms/Launch/9739a52c-6627-4522-acf8-5f87f95f4a9d",
         "https://roswellga.justfoia.com/Forms/Launch/02b6cc8e-5783-45b0-9fbb-3779b3387e72",
         "https://alpharettaga.justfoia.com/Forms/Launch/39f66254-4f9f-4794-955f-a15b1afebd0e",
-         "https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6",
-         "https://www.cityofgriffin.com/services/open-records",
-         "https://henrycounty-services.app.transform.civicplus.com/forms/34175",
-         "https://fayettecountyga.gov/administration/open-records-request",
-         "https://fs6.formsite.com/mAFRD/jiupubq3at/index.html",
-         "https://claytoncountywaterauthority.wufoo.com/forms/z1e6l46517vub7j/"
+        "https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6",
+        "https://www.cityofgriffin.com/services/open-records",
+        "https://henrycounty-services.app.transform.civicplus.com/forms/34175",
+        "https://fayettecountyga.gov/administration/open-records-request",
+        "https://fs6.formsite.com/mAFRD/jiupubq3at/index.html",
+        "https://claytoncountywaterauthority.wufoo.com/forms/z1e6l46517vub7j/"
     ]
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        future_to_url = {executor.submit(process_form, url): url for url in urls}
-        for future in tqdm(concurrent.futures.as_completed(future_to_url), total=len(future_to_url), desc="Processing forms"):
-            url = future_to_url[future]
-            try:
-                result = future.result()
-                results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
-            except Exception as e:
-                results.append({"url": url, "status": "failed", "confirmation": "", "error": str(e)})
+    # Create the main window
+    root = tk.Tk()
+    root.title("Form Submission Progress")
 
-    # Save results
-    save_results(results)
+    # Create a canvas
+    canvas = tk.Canvas(root, width=400, height=200)
+    canvas.pack()
+
+    # Create a progress bar
+    progress_var = tk.DoubleVar()
+    progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=len(urls))
+    canvas.create_window(200, 100, window=progress_bar)
+
+    # Start the processing in a separate thread to keep the GUI responsive
+    threading.Thread(target=run_processing, args=(urls, results, progress_bar, progress_var)).start()
+
+    # Start the Tkinter main loop
+    root.mainloop()
