@@ -1577,11 +1577,11 @@ def save_results(results, filename="submission2_results.csv"):
 
 
 
-def process_form(url):
-    driver = create_driver()
-    wait = WebDriverWait(driver, 20)
-    driver.get(url)
-    
+def process_form(url,retries=3):
+    for attempt in range(retries):
+        driver = create_driver()
+        wait = WebDriverWait(driver, 20)
+        driver.get(url)
     try:
         if url == "https://cantonga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
             result = handle_cantonga_form(driver, url)
@@ -1636,7 +1636,10 @@ def process_form(url):
         else:
             result = {"status": "unknown", "confirmation": "", "error": "Unknown URL"}
     except Exception as e:
+        print(f"Attempt {attempt + 1} failed for {url}: {str(e)}")
         result = {"status": "failed", "confirmation": "", "error": str(e)}
+        
+        time.sleep(5)  # Wait before retrying
     finally:
         driver.quit()
     

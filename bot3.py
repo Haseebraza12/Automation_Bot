@@ -14,38 +14,29 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 # Sample form_data (this should be replaced with actual form data as required)
-form_data = {
-    "date":"10/12/2024",
-  "name": "John Doe",
-  "first name": "Joe",
-    "last name":"Doe",
-    "phone": "123-456-7890",
-    "p1": "123",
-    "p2":"456",
-    "p3":"7890",
-    "email": "dummyemail@example.com",
-    "address": "123 Main Street, Suite 100",
-    "city": "SampleCity",
-    "state": "SampleState",
-    "zip": "12345",
-    "company":"no",
-    "case":"no",
-    "time":"7:25 pm",
-    "person represented":"no",
-    "case number":"12",
-    "unit number": "12",
-    "country": "USA",
-    "message": """My name is John Doe, and I am requesting records from the Code Enforcement Office.
 
-In accordance with the [Insert Local Open Records Act], I am requesting a list of all open code violations for residential properties over the past 30 days. Specifically, I am interested in violations related to damaged or decayed roofs, mold, broken windows, boarded-up windows and doors, overgrown weeds and grass, trash and debris, rodent infestations or unsanitary conditions, flaking or peeling paint, vacant and unsecured structures, and any buildings deemed dangerous, uninhabitable, or unfit for occupancy.
+# Create form fields
+form_data = [
+        ("Date", "date_entry"),
+        ("Name", "name_entry"),
+        ("First Name", "first_name_entry"),
+        ("Last Name", "last_name_entry"),
+        ("Phone", "phone_entry"),
+        ("Email", "email_entry"),
+        ("Address", "address_entry"),
+        ("City", "city_entry"),
+        ("State", "state_entry"),
+        ("Zip", "zip_entry"),
+        ("Company", "company_entry"),
+        ("Case", "case_entry"),
+        ("Time", "time_entry"),
+        ("Person Represented", "person_represented_entry"),
+        ("Case Number", "case_number_entry"),
+        ("Unit Number", "unit_number_entry"),
+        ("Country", "country_entry"),
+        ("Message", "message_entry")
+    ]
 
-Please provide the details of these violations, including the nature of the violation, the address of the property, and the date of the violation. If possible, I would appreciate receiving the information in a digital format, such as a .csv file or a searchable PDF. However, I am happy to accept the information in any format that is convenient for your office.
-
-Thank you for your assistance in this matter.
-
-Sincerely,
-John Doe"""
-}
 def create_driver():
     # Set Chrome options
     chrome_options = webdriver.ChromeOptions()
@@ -1498,11 +1489,12 @@ def save_results(results, filename="submission3_results.csv"):
 
 
 
-def process_form(url):
-    driver = create_driver()
-    wait = WebDriverWait(driver, 20)
-    driver.get(url)
-    
+def process_form(url,retries=3):
+    for attempt in range(retries):
+        driver = create_driver()
+        wait = WebDriverWait(driver, 20)
+        driver.get(url)
+        
     try:
         if url == "https://cherokeecountyga.nextrequest.com/requests/new":
             result = handle_cherokeecountyga_form(driver, url)
@@ -1553,7 +1545,9 @@ def process_form(url):
         else:
             result = {"status": "unknown", "confirmation": "", "error": "Unknown URL"}
     except Exception as e:
+        print(f"Attempt {attempt + 1} failed for {url}: {str(e)}")
         result = {"status": "failed", "confirmation": "", "error": str(e)}
+        time.sleep(5) 
     finally:
         driver.quit()
     
@@ -1566,6 +1560,7 @@ def save_results(results, filename="submission3_results.csv"):
         dict_writer = csv.DictWriter(output_file, fieldnames=keys)
         dict_writer.writeheader()
         dict_writer.writerows(results)
+
 
 def update_progress_bar(progress_bar, progress_var, value):
     progress_var.set(value)
@@ -1588,6 +1583,118 @@ def run_processing(urls, results, progress_bar, progress_var):
 
     # Close the GUI window
     root.quit()
+
+def create_gradient(canvas, width, height):
+    # Clear the canvas
+    canvas.delete("all")
+    # Create a gradient background
+    for i in range(height):
+        color = f'#{int(255 - (i * 255 / height)):02x}99ff'  # Light purple to white
+        canvas.create_line(0, i, width, i, fill=color)
+
+def resize_canvas(event):
+    # Redraw the gradient when the window is resized
+    create_gradient(canvas, event.width, event.height)
+    draw_form_fields()
+
+def submit_form():
+    form_data = {
+        "date": date_entry.get(),
+        "name": name_entry.get(),
+        "first name": first_name_entry.get(),
+        "last name": last_name_entry.get(),
+        "phone": phone_entry.get(),
+        "email": email_entry.get(),
+        "address": address_entry.get(),
+        "city": city_entry.get(),
+        "state": state_entry.get(),
+        "zip": zip_entry.get(),
+        "company": company_entry.get(),
+        "case": case_entry.get(),
+        "time": time_entry.get(),
+        "person represented": person_represented_entry.get(),
+        "case number": case_number_entry.get(),
+        "unit number": unit_number_entry.get(),
+        "country": country_entry.get(),
+        "message": message_entry.get("1.0", tk.END)
+    }
+    
+    # Check if all fields are filled
+    for key, value in form_data.items():
+        if not value.strip():
+            tk.messagebox.showerror("Error", f"Please fill in the {key} field.")
+            return
+    
+    print(form_data)
+    threading.Thread(target=run_processing, args=(urls, results, progress_bar, progress_var)).start()
+
+def draw_form_fields():
+    entries = {}
+    x_position = 50
+    y_position = 50
+    for i, (field, var_name) in enumerate([
+        ("Date", "date_entry"),
+        ("Name", "name_entry"),
+        ("First Name", "first_name_entry"),
+        ("Last Name", "last_name_entry"),
+        ("Phone", "phone_entry"),
+        ("Email", "email_entry"),
+        ("Address", "address_entry"),
+        ("City", "city_entry"),
+        ("State", "state_entry"),
+        ("Zip", "zip_entry"),
+        ("Company", "company_entry"),
+        ("Case", "case_entry"),
+        ("Time", "time_entry"),
+        ("Person Represented", "person_represented_entry"),
+        ("Case Number", "case_number_entry"),
+        ("Unit Number", "unit_number_entry"),
+        ("Country", "country_entry"),
+        ("Message", "message_entry")
+    ]):
+        label = ttk.Label(root, text=field)
+        canvas.create_window(x_position, y_position, window=label, anchor="w")
+        if field == "Message":
+            entry = tk.Text(root, height=5, width=50)
+        else:
+            entry = ttk.Entry(root)
+        canvas.create_window(x_position + 200, y_position, window=entry, anchor="w")
+        entries[var_name] = entry
+
+        if (i + 1) % 3 == 0:
+            x_position = 50
+            y_position += 60 if field != "Message" else 100
+        else:
+            x_position += 350
+
+    global date_entry, name_entry, first_name_entry, last_name_entry, phone_entry, email_entry, address_entry, city_entry, state_entry, zip_entry, company_entry, case_entry, time_entry, person_represented_entry, case_number_entry, unit_number_entry, country_entry, message_entry
+    date_entry = entries["date_entry"]
+    name_entry = entries["name_entry"]
+    first_name_entry = entries["first_name_entry"]
+    last_name_entry = entries["last_name_entry"]
+    phone_entry = entries["phone_entry"]
+    email_entry = entries["email_entry"]
+    address_entry = entries["address_entry"]
+    city_entry = entries["city_entry"]
+    state_entry = entries["state_entry"]
+    zip_entry = entries["zip_entry"]
+    company_entry = entries["company_entry"]
+    case_entry = entries["case_entry"]
+    time_entry = entries["time_entry"]
+    person_represented_entry = entries["person_represented_entry"]
+    case_number_entry = entries["case_number_entry"]
+    unit_number_entry = entries["unit_number_entry"]
+    country_entry = entries["country_entry"]
+    message_entry = entries["message_entry"]
+
+    submit_button = ttk.Button(root, text="Submit", command=submit_form)
+    canvas.create_window(300, y_position + 50, window=submit_button, anchor="w")
+
+    # Create a progress bar
+    global progress_var, progress_bar
+    progress_var = tk.DoubleVar()
+    progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=len(urls))
+    canvas.create_window(500, y_position + 100, window=progress_bar)
 
 if __name__ == "__main__":
     results = []
@@ -1624,16 +1731,17 @@ if __name__ == "__main__":
     root.title("Form Submission Progress")
 
     # Create a canvas
-    canvas = tk.Canvas(root, width=400, height=200)
+    canvas = tk.Canvas(root, width=1000, height=1000)
+    canvas.pack(fill="both", expand=True)
     canvas.pack()
 
-    # Create a progress bar
-    progress_var = tk.DoubleVar()
-    progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=len(urls))
-    canvas.create_window(200, 100, window=progress_bar)
+    # Create the gradient background
+    create_gradient(canvas, 1000, 1000)
+    canvas.pack(fill="both", expand=True)
+    canvas.bind("<Configure>", resize_canvas)
 
-    # Start the processing in a separate thread to keep the GUI responsive
-    threading.Thread(target=run_processing, args=(urls, results, progress_bar, progress_var)).start()
+    # Draw form fields on top of the gradient
+    draw_form_fields()
 
     # Start the Tkinter main loop
     root.mainloop()
