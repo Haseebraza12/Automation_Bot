@@ -15,27 +15,7 @@ from tkinter import ttk
 import threading
 # Sample form_data (this should be replaced with actual form data as required)
 
-# Create form fields
-form_data = [
-        ("Date", "date_entry"),
-        ("Name", "name_entry"),
-        ("First Name", "first_name_entry"),
-        ("Last Name", "last_name_entry"),
-        ("Phone", "phone_entry"),
-        ("Email", "email_entry"),
-        ("Address", "address_entry"),
-        ("City", "city_entry"),
-        ("State", "state_entry"),
-        ("Zip", "zip_entry"),
-        ("Company", "company_entry"),
-        ("Case", "case_entry"),
-        ("Time", "time_entry"),
-        ("Person Represented", "person_represented_entry"),
-        ("Case Number", "case_number_entry"),
-        ("Unit Number", "unit_number_entry"),
-        ("Country", "country_entry"),
-        ("Message", "message_entry")
-    ]
+
 
 def create_driver():
     # Set Chrome options
@@ -711,7 +691,6 @@ def handle_hapevillega_form(driver, url):
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
     
-
 def handle_fairburnga_form(driver, url):
     try:
         driver.get(url)
@@ -722,27 +701,27 @@ def handle_fairburnga_form(driver, url):
 
         # Fill all fields
         fields_to_fill = {
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div[1]/input": form_data["name"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div[1]/input": form_data["phone"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div[1]/input": form_data["email"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div[1]/input": form_data["address"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div[1]/input": form_data["city"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div[1]/input": form_data["state"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div[1]/input": form_data["zip"]
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div/div[1]/input": form_data["phone"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div/div[1]/input": form_data["email"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div/div[1]/input": form_data["address"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div/div[1]/input": form_data["city"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div/div[1]/input": form_data["state"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div/div[1]/input": form_data["zip"]
         }
 
         for xpath, value in fields_to_fill.items():
             fill_field(driver, wait, xpath, value)
 
         # Fill request details
-        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div[1]/textarea"
+        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div/div[1]/textarea"
         details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
         details.clear()
         details.send_keys(form_data["message"])
         print("Filled request details")
 
         #checkbox
-        checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[13]/div[1]/div/div/div/div/div/div/div"
+        checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[13]/div/div[1]/div/div/div/div/div/div/div"
         for checkbox_xpath in [checkbox1_xpath]:
             checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
             driver.execute_script("arguments[0].click();", checkbox)
@@ -763,7 +742,6 @@ def handle_fairburnga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-
 
 
 def handle_eastpointga_form(driver, url):
@@ -1598,6 +1576,7 @@ def resize_canvas(event):
     draw_form_fields()
 
 def submit_form():
+    global form_data
     form_data = {
         "date": date_entry.get(),
         "name": name_entry.get(),
