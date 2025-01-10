@@ -2176,7 +2176,8 @@ def create_gradient(canvas, width, height):
     canvas.delete("all")
     # Create a gradient background
     for i in range(height):
-        color = f'#{int(255 - (i * 255 / height)):02x}99ff'  # Light purple to white
+        grey_value = int(200 - (i * 100 / height))  # Adjust the range for grey
+        color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'  # Light grey to white
         canvas.create_line(0, i, width, i, fill=color)
 
 def resize_canvas(event):
