@@ -1,73 +1,108 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 import subprocess
+import threading
 
-def run_script(script_name):
-    try:
-        # Run the selected script
-        subprocess.run(['python', script_name], check=True)
-        messagebox.showinfo("Success", f"{script_name} executed successfully.")
-    except subprocess.CalledProcessError as e:
-        messagebox.showerror("Error", f"Error executing {script_name}: {e}")
+class PasswordDialog(tk.Toplevel):
+    def __init__(self, master):
+        super().__init__(master)
+        self.title("Password Required")
+        self.geometry("300x150")
 
-def on_run_button_click():
-    selected_script = script_var.get()
-    if selected_script:
-        run_script(selected_script)
-    else:
-        messagebox.showwarning("Warning", "Please select a script to run.")
+        self.label = ttk.Label(self, text="Enter Password:", font=("Arial", 14))
+        self.label.pack(pady=10)
 
-def create_gradient(canvas, width, height):
-    # Clear the canvas
-    canvas.delete("all")
-    # Create a gradient background
-    for i in range(height):
-        color = f'#{int(255 - (i * 255 / height)):02x}99ff'  # Light purple to white
-        canvas.create_line(0, i, width, i, fill=color)
+        self.password_entry = ttk.Entry(self, show="*", font=("Arial", 14))
+        self.password_entry.pack(pady=5)
 
-def resize_canvas(event):
-    # Redraw the gradient when the window is resized
-    create_gradient(canvas, event.width, event.height)
+        self.submit_button = ttk.Button(self, text="Submit", command=self.check_password)
+        self.submit_button.pack(pady=10)
 
-# Create the main window
-root = tk.Tk()
-root.title("Bot Runner")
-root.geometry("400x300")
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-# Create a canvas for the gradient background
-canvas = tk.Canvas(root, width=400, height=300)
-canvas.pack(fill="both", expand=True)
+    def check_password(self):
+        if self.password_entry.get() == "josh":
+            self.destroy()  # Close the dialog if the password is correct
+            self.master.run_script()
+        else:
+            messagebox.showerror("Error", "Incorrect password. Please try again.")
 
-# Create the gradient background
-create_gradient(canvas, 400, 300)
+    def on_closing(self):
+        self.master.destroy()  # Close the main application if the dialog is closed
 
-# Bind the resize event to the resize_canvas function
-canvas.bind("<Configure>", resize_canvas)
+class BotRunnerApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Bot Runner")
+        self.geometry("400x300")
 
-# Create a frame for the UI elements
-frame = tk.Frame(root, bg='white', bd=2, relief='groove')
-frame.place(relx=0.5, rely=0.5, anchor='center', width=300, height=200)
+        # Create a canvas for the gradient background
+        self.canvas = tk.Canvas(self, width=400, height=300)
+        self.canvas.pack(fill="both", expand=True)
 
-# Add the welcome text above the dropdown
-welcome_label = tk.Label(frame, text="Welcome to Bot Runner", bg='white', font=("Arial", 16, "bold"))
-welcome_label.pack(pady=(10, 0))
+        # Create the gradient background
+        self.create_gradient(400, 300)
 
-# Create a variable to hold the selected script
-script_var = tk.StringVar()
+        # Bind the resize event to the resize_canvas function
+        self.canvas.bind("<Configure>", self.resize_canvas)
 
-# Create a label
-label = tk.Label(frame, text="Select a Bot Script to Run:", bg='white', font=("Arial", 12))
-label.pack(pady=10)
+        # Create a frame for the UI elements
+        self.frame = tk.Frame(self, bg='white', bd=2, relief='groove')
+        self.frame.place(relx=0.5, rely=0.5, anchor='center', width=300, height=200)
 
-# Create a dropdown menu
-script_options = ["bot1.py", "bot2.py", "bot3.py"]
-script_menu = tk.OptionMenu(frame, script_var, *script_options)
-script_menu.config(bg='lightgray', font=("Arial", 10))
-script_menu.pack(pady=10)
+        # Add the welcome text above the dropdown
+        self.welcome_label = tk.Label(self.frame, text="Welcome to Bot Runner", bg='white', font=("Arial", 16, "bold"))
+        self.welcome_label.pack(pady=(10, 0))
 
-# Create a button to run the selected script
-run_button = tk.Button(frame, text="Run Selected Script", command=on_run_button_click, bg='purple', fg='white', font=("Arial", 10))
-run_button.pack(pady=10)
+        # Create a variable to hold the selected script
+        self.script_var = tk.StringVar()
 
-# Start the Tkinter event loop
-root.mainloop()
+        # Create a label
+        self.label = tk.Label(self.frame, text="Select a Bot Script to Run:", bg='white', font=("Arial", 12))
+        self.label.pack(pady=10)
+
+        # Create a dropdown menu
+        self.script_options = ["bot1.py", "bot2.py", "bot3.py"]
+        self.script_menu = tk.OptionMenu(self.frame, self.script_var, *self.script_options)
+        self.script_menu.config(bg='lightgray', font=("Arial", 10))
+        self.script_menu.pack(pady=10)
+
+        # Create a button to run the selected script
+        self.run_button = tk.Button(self.frame, text="Run Selected Script", command=self.on_run_button_click, bg='purple', fg='white', font=("Arial", 10))
+        self.run_button.pack(pady=10)
+
+    def create_gradient(self, width, height):
+        # Clear the canvas
+        self.canvas.delete("all")
+        # Create a gradient background
+        for i in range(height):
+            grey_value = int(200 - (i * 100 / height))  # Adjust the range for grey
+            color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'  # Light grey to white
+            self.canvas.create_line(0, i, width, i, fill=color)
+
+    def resize_canvas(self, event):
+        # Redraw the gradient when the window is resized
+        self.create_gradient(event.width, event.height)
+
+    def run_script(self):
+        selected_script = self.script_var.get()
+        if selected_script:
+            # Run the script in a separate thread
+            threading.Thread(target=self._run_script_thread, args=(selected_script,)).start()
+        else:
+            messagebox.showwarning("Warning", "Please select a script to run.")
+
+    def _run_script_thread(self, script_name):
+        try:
+            # Run the selected script
+            subprocess.run(['python', script_name], check=True)
+            messagebox.showinfo("Success", f"{script_name} executed successfully.")
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Error", f"Error executing {script_name}: {e}")
+
+    def on_run_button_click(self):
+        PasswordDialog(self)
+
+if __name__ == "__main__":
+    app = BotRunnerApp()
+    app.mainloop()
