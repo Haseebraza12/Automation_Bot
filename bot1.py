@@ -2394,9 +2394,5 @@ if __name__ == "__main__":
 
     # Function to run links of the selected county
     county_dropdown.bind("<<ComboboxSelected>>", on_county_selected)
-
-    # Draw the form fields
     draw_form_fields()
-
-    # Start the Tkinter main loop
     root.mainloop()
