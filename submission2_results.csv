@@ -1,22 +1,35 @@
 url,status,confirmation,error
-https://cantonga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
-https://maconbibbcountyga.justfoia.com/Forms/Launch/a709d888-de2f-4857-9c82-b12b2645a87c,Success,Form submitted,
-https://woodstockga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
-https://collegeparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
-https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
-https://austellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=50580): Read timed out. (read timeout=120)"
-https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
-https://smyrnaga.justfoia.com/Forms/Launch/fd208f47-7557-4edf-9478-723c87ba6b30,Success,Form submitted,
-https://forsythcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
-https://fairburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Failed,,"Message: 
+https://fairburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=60945): Read timed out. (read timeout=120)"
+https://smyrnaga.justfoia.com/Forms/Launch/fd208f47-7557-4edf-9478-723c87ba6b30,failed,,"HTTPConnectionPool(host='localhost', port=61027): Read timed out. (read timeout=120)"
+https://cantonga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61045): Read timed out. (read timeout=120)"
+https://woodstockga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61047): Read timed out. (read timeout=120)"
+https://forsythcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61124): Read timed out. (read timeout=120)"
+https://maconbibbcountyga.justfoia.com/Forms/Launch/a709d888-de2f-4857-9c82-b12b2645a87c,failed,,"HTTPConnectionPool(host='localhost', port=61167): Read timed out. (read timeout=120)"
+https://austellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61242): Read timed out. (read timeout=120)"
+https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61319): Read timed out. (read timeout=120)"
+https://collegeparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61382): Read timed out. (read timeout=120)"
+https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61423): Read timed out. (read timeout=120)"
+https://cityofaugustaga.nextrequest.com/requests/new,failed,,"HTTPConnectionPool(host='localhost', port=61430): Read timed out. (read timeout=120)"
+https://cityoffayettevillega.nextrequest.com/requests/new,failed,,"HTTPConnectionPool(host='localhost', port=61474): Read timed out. (read timeout=120)"
+https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61497): Read timed out. (read timeout=120)"
+https://unioncityga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61557): Read timed out. (read timeout=120)"
+https://henrycounty-services.app.transform.civicplus.com/forms/34175,failed,,"Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=131.0.6778.205)
 Stacktrace:
 	GetHandleVerifier [0x00007FF66AA66CF5+28821]
 	(No symbol) [0x00007FF66A9D3880]
 	(No symbol) [0x00007FF66A87578A]
-	(No symbol) [0x00007FF66A8C91BE]
-	(No symbol) [0x00007FF66A8C94AC]
-	(No symbol) [0x00007FF66A912647]
-	(No symbol) [0x00007FF66A8EF33F]
+	(No symbol) [0x00007FF66A872E88]
+	(No symbol) [0x00007FF66A863BF9]
+	(No symbol) [0x00007FF66A86594F]
+	(No symbol) [0x00007FF66A863EBF]
+	(No symbol) [0x00007FF66A86371B]
+	(No symbol) [0x00007FF66A86365A]
+	(No symbol) [0x00007FF66A861274]
+	(No symbol) [0x00007FF66A861B3C]
+	(No symbol) [0x00007FF66A87885A]
+	(No symbol) [0x00007FF66A9101FE]
+	(No symbol) [0x00007FF66A8EF2FA]
 	(No symbol) [0x00007FF66A90F412]
 	(No symbol) [0x00007FF66A8EF0A3]
 	(No symbol) [0x00007FF66A8BA778]
@@ -32,18 +45,44 @@ Stacktrace:
 	BaseThreadInitThunk [0x00007FFC9F3D7374+20]
 	RtlUserThreadStart [0x00007FFCA0BFCC91+33]
 "
-https://cityofaugustaga.nextrequest.com/requests/new,Success,Form submitted,
-https://cityoffayettevillega.nextrequest.com/requests/new,Success,Form submitted,
-https://unioncityga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
-https://sandyspringsga.justfoia.com/Forms/Launch/9739a52c-6627-4522-acf8-5f87f95f4a9d,Success,Form submitted,
-https://www.cityofgriffin.com/services/open-records,Success,Form submitted,
-https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6,Success,Form submitted,
-https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Failed,,"HTTPConnectionPool(host='localhost', port=50850): Read timed out. (read timeout=120)"
-https://hapevillega.justfoia.com/Forms/Launch/0e8fe236-181b-486e-8bb2-33990d9295c0,Success,Form submitted,
-https://eastpointga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,Success,Form submitted,
-https://roswellga.justfoia.com/Forms/Launch/02b6cc8e-5783-45b0-9fbb-3779b3387e72,Success,Form submitted,
-https://alpharettaga.justfoia.com/Forms/Launch/39f66254-4f9f-4794-955f-a15b1afebd0e,Success,Form submitted,
+https://alpharettaga.justfoia.com/Forms/Launch/39f66254-4f9f-4794-955f-a15b1afebd0e,failed,,"Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=131.0.6778.205)
+Stacktrace:
+	GetHandleVerifier [0x00007FF66AA66CF5+28821]
+	(No symbol) [0x00007FF66A9D3880]
+	(No symbol) [0x00007FF66A87578A]
+	(No symbol) [0x00007FF66A872E88]
+	(No symbol) [0x00007FF66A863BF9]
+	(No symbol) [0x00007FF66A86594F]
+	(No symbol) [0x00007FF66A863EBF]
+	(No symbol) [0x00007FF66A86371B]
+	(No symbol) [0x00007FF66A86365A]
+	(No symbol) [0x00007FF66A861274]
+	(No symbol) [0x00007FF66A861B3C]
+	(No symbol) [0x00007FF66A87885A]
+	(No symbol) [0x00007FF66A9101FE]
+	(No symbol) [0x00007FF66A8EF2FA]
+	(No symbol) [0x00007FF66A90F412]
+	(No symbol) [0x00007FF66A8EF0A3]
+	(No symbol) [0x00007FF66A8BA778]
+	(No symbol) [0x00007FF66A8BB8E1]
+	GetHandleVerifier [0x00007FF66AD9FCED+3408013]
+	GetHandleVerifier [0x00007FF66ADB745F+3504127]
+	GetHandleVerifier [0x00007FF66ADAB63D+3455453]
+	GetHandleVerifier [0x00007FF66AB2BDFB+835995]
+	(No symbol) [0x00007FF66A9DEB9F]
+	(No symbol) [0x00007FF66A9DA854]
+	(No symbol) [0x00007FF66A9DA9ED]
+	(No symbol) [0x00007FF66A9CA1D9]
+	BaseThreadInitThunk [0x00007FFC9F3D7374+20]
+	RtlUserThreadStart [0x00007FFCA0BFCC91+33]
+"
+https://hapevillega.justfoia.com/Forms/Launch/0e8fe236-181b-486e-8bb2-33990d9295c0,failed,,"HTTPConnectionPool(host='localhost', port=61705): Read timed out. (read timeout=120)"
+https://eastpointga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb,failed,,"HTTPConnectionPool(host='localhost', port=61792): Read timed out. (read timeout=120)"
+https://sandyspringsga.justfoia.com/Forms/Launch/9739a52c-6627-4522-acf8-5f87f95f4a9d,failed,,"HTTPConnectionPool(host='localhost', port=61907): Read timed out. (read timeout=120)"
+https://roswellga.justfoia.com/Forms/Launch/02b6cc8e-5783-45b0-9fbb-3779b3387e72,failed,,"HTTPConnectionPool(host='localhost', port=61910): Read timed out. (read timeout=120)"
+https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6,failed,,"HTTPConnectionPool(host='localhost', port=61937): Read timed out. (read timeout=120)"
+https://fayettecountyga.gov/administration/open-records-request,failed,,"HTTPConnectionPool(host='localhost', port=62034): Read timed out. (read timeout=120)"
+https://claytoncountywaterauthority.wufoo.com/forms/z1e6l46517vub7j/,failed,,"HTTPConnectionPool(host='localhost', port=62135): Read timed out. (read timeout=120)"
+https://www.cityofgriffin.com/services/open-records,failed,,"HTTPConnectionPool(host='localhost', port=62178): Read timed out. (read timeout=120)"
 https://fs6.formsite.com/mAFRD/jiupubq3at/index.html,Success,Form submitted,
-https://claytoncountywaterauthority.wufoo.com/forms/z1e6l46517vub7j/,Success,Form submitted,
-https://fayettecountyga.gov/administration/open-records-request,failed,,"HTTPConnectionPool(host='localhost', port=51601): Read timed out. (read timeout=120)"
-https://henrycounty-services.app.transform.civicplus.com/forms/34175,Success,Form submitted,
