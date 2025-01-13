@@ -11,7 +11,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import concurrent.futures
 from tqdm import tqdm
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk,messagebox
 import threading
 # Sample form_data (this should be replaced with actual form data as required)
 
@@ -1562,19 +1562,15 @@ def run_processing(urls, results, progress_bar, progress_var):
     # Close the GUI window
     root.quit()
 
+
 def create_gradient(canvas, width, height):
-    # Clear the canvas
-    canvas.delete("all")
-    # Create a gradient background
     for i in range(height):
-        grey_value = int(200 - (i * 100 / height))  # Adjust the range for grey
-        color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'  # Light grey to white
+        grey_value = int(200 - (i * 100 / height))
+        color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'
         canvas.create_line(0, i, width, i, fill=color)
 
 def resize_canvas(event):
-    # Redraw the gradient when the window is resized
-    create_gradient(canvas, event.width, event.height)
-    draw_form_fields()
+    create_gradient(event.widget, event.width, event.height)
 
 def submit_form():
     global form_data
@@ -1602,13 +1598,19 @@ def submit_form():
     # Check if all fields are filled
     for key, value in form_data.items():
         if not value.strip():
-            tk.messagebox.showerror("Error", f"Please fill in the {key} field.")
+            messagebox.showerror("Error", f"Please fill in the {key} field.")
             return
     
-    print(form_data)
-    threading.Thread(target=run_processing, args=(urls, results, progress_bar, progress_var)).start()
+    county = selected_county.get()
+    if not county:
+        messagebox.showerror("Error", "Please select a county.")
+        return
+    
+    if county in urls:
+        threading.Thread(target=run_processing, args=(urls[county], results, progress_bar, progress_var)).start()
 
 def draw_form_fields():
+    global entries
     entries = {}
     x_position = 50
     y_position = 50
@@ -1676,35 +1678,73 @@ def draw_form_fields():
     progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=len(urls))
     canvas.create_window(500, y_position + 100, window=progress_bar)
 
+def run_links(links):
+    for link in links:
+        print(f"Running link: {link}")
+
+def on_county_selected(event):
+    # Check if all fields are filled
+    for key, entry in entries.items():
+        if isinstance(entry, tk.Text):
+            value = entry.get("1.0", tk.END).strip()
+        else:
+            value = entry.get().strip()
+        if not value:
+            messagebox.showerror("Error", f"Please fill in the {key.replace('_', ' ')} field.")
+            return
+
+    county = selected_county.get()
+    if county in urls:
+        run_links(urls[county])
+
 if __name__ == "__main__":
     results = []
 
-    # List of URLs for the forms
-    urls = [
-        "https://cherokeecountyga.nextrequest.com/requests/new",
-        "https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://collegeparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://cityofaugustaga.nextrequest.com/requests/new",
-        "https://cityoffayettevillega.nextrequest.com/requests/new",
-        "https://peachtreecitygapolice.nextrequest.com/requests/new",
-        "https://unioncityga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://maconbibbcountyga.justfoia.com/Forms/Launch/a709d888-de2f-4857-9c82-b12b2645a87c",
-        "https://cantonga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://hapevillega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://fairburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://eastpointga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://woodstockga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://riverdalega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://acworthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://austellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://forestparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://roswellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://www.cityofgriffin.com/services/open-records",
-        "https://henrycounty-services.app.transform.civicplus.com/forms/34175",
-        "https://fs6.formsite.com/mAFRD/jiupubq3at/index.html"
-    ]
+    # Dictionary of URLs classified by county
+    urls = {
+        "Bibb County": [
+            "https://maconbibbcountyga.justfoia.com/Forms/Launch/a709d888-de2f-4857-9c82-b12b2645a87c"
+        ],
+        "Cherokee County": [
+            "https://cherokeecountyga.nextrequest.com/requests/new",
+            "https://cantonga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
+            "https://woodstockga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
+        ],
+        "Clayton County": [
+            "https://claytoncountywaterauthority.wufoo.com/forms/z1e6l46517vub7j/"
+        ],
+        "Cobb County": [
+            "https://austellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
+            "https://smyrnaga.justfoia.com/Forms/Launch/fd208f47-7557-4edf-9478-723c87ba6b30"
+        ],
+        "Dougherty County": [
+            "https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
+        ],
+        "Fayette County": [
+            "https://cityoffayettevillega.nextrequest.com/requests/new"
+        ],
+        "Forsyth County": [
+            "https://forsythcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
+        ],
+        "Fulton County": [
+            "https://roswellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
+            "https://fairburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
+            "https://collegeparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
+        ],
+        "Henry County": [
+            "https://henrycounty-services.app.transform.civicplus.com/forms/34175"
+        ],
+        "Richmond County": [
+            "https://cityofaugustaga.nextrequest.com/requests/new"
+        ],
+        "Rockdale County": [
+            "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
+        ],
+        "Spalding County": [
+            "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
+            "https://www.cityofgriffin.com/services/open-records"
+        ]
+    }
 
     # Create the main window
     root = tk.Tk()
@@ -1713,14 +1753,21 @@ if __name__ == "__main__":
     # Create a canvas
     canvas = tk.Canvas(root, width=1000, height=1000)
     canvas.pack(fill="both", expand=True)
-    canvas.pack()
 
     # Create the gradient background
     create_gradient(canvas, 1000, 1000)
-    canvas.pack(fill="both", expand=True)
     canvas.bind("<Configure>", resize_canvas)
 
-    # Draw form fields on top of the gradient
+    # Create a dropdown menu for selecting the county
+    selected_county = tk.StringVar()
+    county_dropdown = ttk.Combobox(root, textvariable=selected_county)
+    county_dropdown['values'] = list(urls.keys())
+    canvas.create_window(500, 30, window=county_dropdown, anchor="w")
+
+    # Function to run links of the selected county
+    county_dropdown.bind("<<ComboboxSelected>>", on_county_selected)
+
+    # Draw the form fields
     draw_form_fields()
 
     # Start the Tkinter main loop
