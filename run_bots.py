@@ -62,13 +62,13 @@ class BotRunnerApp(tk.Tk):
         self.label.pack(pady=10)
 
         # Create a dropdown menu
-        self.script_options = ["bot1.py", "bot2.py", "bot3.py"]
+        self.script_options = ["code violations.py", "fire.py", "water.py"]
         self.script_menu = tk.OptionMenu(self.frame, self.script_var, *self.script_options)
         self.script_menu.config(bg='lightgray', font=("Arial", 10))
         self.script_menu.pack(pady=10)
 
         # Create a button to run the selected script
-        self.run_button = tk.Button(self.frame, text="Run Selected Script", command=self.on_run_button_click, bg='purple', fg='white', font=("Arial", 10))
+        self.run_button = tk.Button(self.frame, text="Run Selected Script", command=self.on_run_button_click, bg='lightgray', fg='black', font=("Arial", 10))
         self.run_button.pack(pady=10)
 
     def create_gradient(self, width, height):
@@ -77,7 +77,9 @@ class BotRunnerApp(tk.Tk):
         # Create a gradient background
         for i in range(height):
             grey_value = int(200 - (i * 100 / height))  # Adjust the range for grey
-            color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'  # Light grey to white
+            # Fill the canvas with light grey color
+            self.canvas.create_rectangle(0, 0, width, height, fill='grey', outline='grey')
+            color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'  # Define the color as a shade of grey
             self.canvas.create_line(0, i, width, i, fill=color)
 
     def resize_canvas(self, event):
