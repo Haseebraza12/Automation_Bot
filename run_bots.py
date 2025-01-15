@@ -23,7 +23,7 @@ class PasswordDialog(tk.Toplevel):
     def check_password(self):
         if self.password_entry.get() == "josh":
             self.destroy()  # Close the dialog if the password is correct
-            self.master.run_script()
+            self.master.initialize_ui()
         else:
             messagebox.showerror("Error", "Incorrect password. Please try again.")
 
@@ -35,7 +35,9 @@ class BotRunnerApp(tk.Tk):
         super().__init__()
         self.title("Bot Runner")
         self.geometry("400x300")
+        PasswordDialog(self)
 
+    def initialize_ui(self):
         # Create a canvas for the gradient background
         self.canvas = tk.Canvas(self, width=400, height=300)
         self.canvas.pack(fill="both", expand=True)
