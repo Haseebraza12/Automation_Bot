@@ -2151,6 +2151,7 @@ def save_results(results, filename="submission_results.csv"):
         dict_writer.writerows(results)
 
 
+
 def update_progress_bar(progress_bar, progress_var, value):
     progress_var.set(value)
     progress_bar.update_idletasks()
@@ -2304,14 +2305,46 @@ def draw_form_fields():
     country_entry = entries["country_entry"]
     message_entry = entries["message_entry"]
 
-    # Create checkboxes for selecting counties at the bottom in horizontal form
-    global county_vars
-    county_vars = {}
+    submit_button = ttk.Button(root, text="Submit", command=submit_form)
+    canvas.create_window(300, y_position + 50, window=submit_button, anchor="w")
+
+def open_form_window():
+    global root, canvas
+    root = tk.Toplevel()
+    root.title("Form Submission Progress")
+
+    # Create a canvas
+    canvas = tk.Canvas(root, width=1000, height=1000)
+    canvas.pack(fill="both", expand=True)
+
+    # Create the gradient background
+    create_gradient(canvas, 1000, 1000)
+    canvas.bind("<Configure>", resize_canvas)
+
+    draw_form_fields()
+
+def select_counties():
+    selected_counties = [county for county, var in county_vars.items() if var.get()]
+    if not selected_counties:
+        messagebox.showerror("Error", "Please select at least one county.")
+        return
+    county_selection_window.destroy()
+    open_form_window()
+
+def draw_county_selection():
+    global county_vars, county_selection_window
+    county_selection_window = tk.Tk()
+    county_selection_window.title("Select Counties")
+
+    canvas = tk.Canvas(county_selection_window, width=1000, height=500)
+    canvas.pack(fill="both", expand=True)
+
     x_position = 50
-    y_position += -10  # Adjusted y_position to avoid collision with other fields
+    y_position = 50
+    county_vars = {}
     for county in urls.keys():
         var = tk.BooleanVar()
-        checkbox = ttk.Checkbutton(root, text=county, variable=var)
+        checkbox = ttk.Checkbutton(county_selection_window, text=county, variable=var)
         canvas.create_window(x_position, y_position, window=checkbox, anchor="w")
         county_vars[county] = var
         x_position += 200
@@ -2319,8 +2352,10 @@ def draw_form_fields():
             x_position = 50
             y_position += 30
 
-    submit_button = ttk.Button(root, text="Submit", command=submit_form)
-    canvas.create_window(300, y_position + 50, window=submit_button, anchor="w")
+    next_button = ttk.Button(county_selection_window, text="Next", command=select_counties)
+    canvas.create_window(450, y_position + 50, window=next_button, anchor="w")
+
+    county_selection_window.mainloop()
 
 if __name__ == "__main__":
     results = []
@@ -2390,18 +2425,4 @@ if __name__ == "__main__":
         ]
     }
 
-    # Create the main window
-    root = tk.Tk()
-    root.title("Form Submission Progress")
-
-    # Create a canvas
-    canvas = tk.Canvas(root, width=1000, height=1000)
-    canvas.pack(fill="both", expand=True)
-
-    # Create the gradient background
-    create_gradient(canvas, 1000, 1000)
-    canvas.bind("<Configure>", resize_canvas)
-
-    draw_form_fields()
-
-    root.mainloop()
+    draw_county_selection()
