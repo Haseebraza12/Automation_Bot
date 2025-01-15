@@ -2150,8 +2150,6 @@ def save_results(results, filename="submission_results.csv"):
         dict_writer.writeheader()
         dict_writer.writerows(results)
 
-
-
 def update_progress_bar(progress_bar, progress_var, value):
     progress_var.set(value)
     progress_bar.update_idletasks()
@@ -2339,6 +2337,10 @@ def draw_county_selection():
     canvas = tk.Canvas(county_selection_window, width=1000, height=500)
     canvas.pack(fill="both", expand=True)
 
+    # Create the gradient background
+    create_gradient(canvas, 1000, 500)
+    canvas.bind("<Configure>", resize_canvas)
+
     x_position = 50
     y_position = 50
     county_vars = {}
@@ -2352,11 +2354,18 @@ def draw_county_selection():
             x_position = 50
             y_position += 30
 
-    next_button = ttk.Button(county_selection_window, text="Next", command=select_counties)
+    def on_next():
+        selected_counties = [county for county, var in county_vars.items() if var.get()]
+        if not selected_counties:
+            messagebox.showerror("Error", "Please select at least one county.")
+            return
+        county_selection_window.destroy()
+        open_form_window()
+
+    next_button = ttk.Button(county_selection_window, text="Next", command=on_next)
     canvas.create_window(450, y_position + 50, window=next_button, anchor="w")
 
     county_selection_window.mainloop()
-
 if __name__ == "__main__":
     results = []
 
