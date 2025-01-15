@@ -13,6 +13,7 @@ from tqdm import tqdm
 import tkinter as tk
 from tkinter import ttk,messagebox
 import threading
+import queue
 # Sample form_data (this should be replaced with actual form data as required)
 '''form_data = {
     "date":"13/12/2024",
@@ -1842,11 +1843,13 @@ def save_results(results, filename="submission2_results.csv"):
         dict_writer = csv.DictWriter(output_file, fieldnames=keys)
         dict_writer.writeheader()
         dict_writer.writerows(results)
+
+
 def update_progress_bar(progress_bar, progress_var, value):
     progress_var.set(value)
     progress_bar.update_idletasks()
 
-def run_processing(urls, results, progress_bar, progress_var):
+def run_processing(urls, results, progress_queue):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_url = {executor.submit(process_form, url): url for url in urls}
         for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
@@ -1856,13 +1859,13 @@ def run_processing(urls, results, progress_bar, progress_var):
                 results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
             except Exception as e:
                 results.append({"url": url, "status": "failed", "confirmation": "", "error": str(e)})
-            update_progress_bar(progress_bar, progress_var, i + 1)
+            progress_queue.put(i + 1)
 
     # Save results
     save_results(results)
 
-    # Close the GUI window
-    root.quit()
+    # Signal that processing is complete
+    progress_queue.put(None)
 
 def create_gradient(canvas, width, height):
     for i in range(height):
@@ -1902,13 +1905,38 @@ def submit_form():
             messagebox.showerror("Error", f"Please fill in the {key} field.")
             return
     
-    county = selected_county.get()
-    if not county:
-        messagebox.showerror("Error", "Please select a county.")
+    selected_counties = [county for county, var in county_vars.items() if var.get()]
+    if not selected_counties:
+        messagebox.showerror("Error", "Please select at least one county.")
         return
     
-    if county in urls:
-        threading.Thread(target=run_processing, args=(urls[county], results, progress_bar, progress_var)).start()
+    # Create a new window for the progress bar
+    global progress_window, progress_var, progress_bar, progress_queue
+    progress_window = tk.Toplevel(root)
+    progress_window.title("Processing Progress")
+    
+    progress_var = tk.DoubleVar()
+    progress_bar = ttk.Progressbar(progress_window, variable=progress_var, maximum=len(selected_counties))
+    progress_bar.pack(pady=20, padx=20)
+    
+    progress_queue = queue.Queue()
+    
+    def process_queue():
+        try:
+            value = progress_queue.get_nowait()
+            if value is None:
+                progress_window.quit()
+            else:
+                update_progress_bar(progress_bar, progress_var, value)
+            progress_window.after(100, process_queue)
+        except queue.Empty:
+            progress_window.after(100, process_queue)
+    
+    process_queue()
+    
+    for county in selected_counties:
+        if county in urls:
+            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue)).start()
 
 def draw_form_fields():
     global entries
@@ -1970,33 +1998,23 @@ def draw_form_fields():
     country_entry = entries["country_entry"]
     message_entry = entries["message_entry"]
 
+    # Create checkboxes for selecting counties at the bottom in horizontal form
+    global county_vars
+    county_vars = {}
+    x_position = 50
+    y_position += -10  # Adjusted y_position to avoid collision with other fields
+    for county in urls.keys():
+        var = tk.BooleanVar()
+        checkbox = ttk.Checkbutton(root, text=county, variable=var)
+        canvas.create_window(x_position, y_position, window=checkbox, anchor="w")
+        county_vars[county] = var
+        x_position += 200
+        if x_position > 800:
+            x_position = 50
+            y_position += 30
+
     submit_button = ttk.Button(root, text="Submit", command=submit_form)
     canvas.create_window(300, y_position + 50, window=submit_button, anchor="w")
-
-    # Create a progress bar
-    global progress_var, progress_bar
-    progress_var = tk.DoubleVar()
-    progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=len(urls))
-    canvas.create_window(500, y_position + 100, window=progress_bar)
-
-def run_links(links):
-    for link in links:
-        print(f"Running link: {link}")
-
-def on_county_selected(event):
-    # Check if all fields are filled
-    for key, entry in entries.items():
-        if isinstance(entry, tk.Text):
-            value = entry.get("1.0", tk.END).strip()
-        else:
-            value = entry.get().strip()
-        if not value:
-            messagebox.showerror("Error", f"Please fill in the {key.replace('_', ' ')} field.")
-            return
-
-    county = selected_county.get()
-    if county in urls:
-        run_links(urls[county])
 
 if __name__ == "__main__":
     results = []
@@ -2064,7 +2082,7 @@ if __name__ == "__main__":
             "https://www.cityofgriffin.com/services/open-records"
         ]
     }
-
+    
     # Create the main window
     root = tk.Tk()
     root.title("Form Submission Progress")
@@ -2077,17 +2095,8 @@ if __name__ == "__main__":
     create_gradient(canvas, 1000, 1000)
     canvas.bind("<Configure>", resize_canvas)
 
-    # Create a dropdown menu for selecting the county
-    selected_county = tk.StringVar()
-    county_dropdown = ttk.Combobox(root, textvariable=selected_county)
-    county_dropdown['values'] = list(urls.keys())
-    canvas.create_window(500, 30, window=county_dropdown, anchor="w")
-
-    # Function to run links of the selected county
-    county_dropdown.bind("<<ComboboxSelected>>", on_county_selected)
-
-    # Draw the form fields
     draw_form_fields()
 
-    # Start the Tkinter main loop
     root.mainloop()
+
+
