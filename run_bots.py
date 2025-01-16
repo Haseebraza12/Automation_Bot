@@ -35,9 +35,11 @@ class BotRunnerApp(tk.Tk):
         super().__init__()
         self.title("Bot Runner")
         self.geometry("400x300")
+        self.password_verified = False
         PasswordDialog(self)
 
     def initialize_ui(self):
+        self.password_verified = True
         # Create a canvas for the gradient background
         self.canvas = tk.Canvas(self, width=400, height=300)
         self.canvas.pack(fill="both", expand=True)
@@ -70,7 +72,7 @@ class BotRunnerApp(tk.Tk):
         self.script_menu.pack(pady=10)
 
         # Create a button to run the selected script
-        self.run_button = tk.Button(self.frame, text="Run Selected Script", command=self.on_run_button_click, bg='lightgray', fg='black', font=("Arial", 10))
+        self.run_button = tk.Button(self.frame, text="Run Selected Script", command=self.run_script, bg='lightgray', fg='black', font=("Arial", 10))
         self.run_button.pack(pady=10)
 
     def create_gradient(self, width, height):
@@ -105,7 +107,10 @@ class BotRunnerApp(tk.Tk):
             messagebox.showerror("Error", f"Error executing {script_name}: {e}")
 
     def on_run_button_click(self):
-        PasswordDialog(self)
+        if self.password_verified:
+            self.run_script()
+        else:
+            PasswordDialog(self)
 
 if __name__ == "__main__":
     app = BotRunnerApp()
