@@ -2175,7 +2175,8 @@ def run_processing(urls, results, progress_queue):
 def create_gradient(canvas, width, height):
     for i in range(height):
         grey_value = int(200 - (i * 100 / height))
-        color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'
+        canvas.create_rectangle(0, 0, width, height, fill='grey', outline='grey')
+        color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'  # Define the color as a shade of grey
         canvas.create_line(0, i, width, i, fill=color)
 
 def resize_canvas(event):
@@ -2268,7 +2269,7 @@ def draw_form_fields():
         ("Country", "country_entry"),
         ("Message", "message_entry")
     ]):
-        label = ttk.Label(form_frame, text=field)
+        label = ttk.Label(form_frame, text=field, font=("Helvetica", 10, "bold"), background="#808080") 
         canvas.create_window(x_position, y_position, window=label, anchor="w")
         if field == "Message":
             entry = tk.Text(form_frame, height=5, width=50)
