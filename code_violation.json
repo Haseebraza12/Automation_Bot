@@ -1,0 +1,23 @@
+{
+    "date": "13/12/2024",
+    "name": "John Doe",
+    "first name": "Joe",
+    "last name": "Doe",
+    "phone": "123-456-7890",
+    "p1": "123",
+    "p2": "456",
+    "p3": "7890",
+    "email": "dummyemail@example.com",
+    "address": "123 Main Street, Suite 100",
+    "city": "SampleCity",
+    "state": "SampleState",
+    "zip": "12345",
+    "company": "no",
+    "time": "7:25 pm",
+    "case": "no",
+    "person represented": "no",
+    "case number": "12",
+    "unit number": "12",
+    "country": "USA",
+    "message": "My name is John Doe, and I am requesting records from the Code Enforcement Office.\n\nIn accordance with the [Insert Local Open Records Act], I am requesting a list of all open code violations for residential properties over the past 30 days. Specifically, I am interested in violations related to damaged or decayed roofs, mold, broken windows, boarded-up windows and doors, overgrown weeds and grass, trash and debris, rodent infestations or unsanitary conditions, flaking or peeling paint, vacant and unsecured structures, and any buildings deemed dangerous, uninhabitable, or unfit for occupancy.\n\nPlease provide the details of these violations, including the nature of the violation, the address of the property, and the date of the violation. If possible, I would appreciate receiving the information in a digital format, such as a .csv file or a searchable PDF. However, I am happy to accept the information in any format that is convenient for your office.\n\nThank you for your assistance in this matter.\n\nSincerely,\nJohn Doe"
+}

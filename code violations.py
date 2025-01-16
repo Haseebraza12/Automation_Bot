@@ -12,9 +12,9 @@ import concurrent.futures
 from tqdm import tqdm
 import threading
 import tkinter as tk
-from tkinter import ttk,messagebox
+from tkinter import ttk,messagebox,filedialog
 import queue
-
+import json
 # Sample form_data (this should be replaced with actual form data as required)
 '''form_data = {
     "date":"13/12/2024",
@@ -2268,12 +2268,12 @@ def draw_form_fields():
         ("Country", "country_entry"),
         ("Message", "message_entry")
     ]):
-        label = ttk.Label(root, text=field)
+        label = ttk.Label(form_frame, text=field)
         canvas.create_window(x_position, y_position, window=label, anchor="w")
         if field == "Message":
-            entry = tk.Text(root, height=5, width=50)
+            entry = tk.Text(form_frame, height=5, width=50)
         else:
-            entry = ttk.Entry(root)
+            entry = ttk.Entry(form_frame)
         canvas.create_window(x_position + 200, y_position, window=entry, anchor="w")
         entries[var_name] = entry
 
@@ -2303,16 +2303,29 @@ def draw_form_fields():
     country_entry = entries["country_entry"]
     message_entry = entries["message_entry"]
 
-    submit_button = ttk.Button(root, text="Submit", command=submit_form)
+    submit_button = ttk.Button(form_frame, text="Submit", command=submit_form)
     canvas.create_window(300, y_position + 50, window=submit_button, anchor="w")
 
 def open_form_window():
-    global root, canvas
+    global root, canvas, form_frame, json_frame
     root = tk.Toplevel()
     root.title("Form Submission Progress")
 
-    # Create a canvas
-    canvas = tk.Canvas(root, width=1000, height=1000)
+    # Create a notebook for tabs
+    notebook = ttk.Notebook(root)
+    notebook.pack(fill="both", expand=True)
+
+    # Create a frame for the form
+    form_frame = ttk.Frame(notebook)
+    notebook.add(form_frame, text="Manual Form")
+
+    # Create a frame for JSON file selection
+    json_frame = ttk.Frame(notebook)
+    notebook.add(json_frame, text="Upload JSON")
+
+    # Create a canvas for the form
+    global canvas
+    canvas = tk.Canvas(form_frame, width=1000, height=1000)
     canvas.pack(fill="both", expand=True)
 
     # Create the gradient background
@@ -2320,6 +2333,45 @@ def open_form_window():
     canvas.bind("<Configure>", resize_canvas)
 
     draw_form_fields()
+
+    # Add JSON file selection components
+    json_label = ttk.Label(json_frame, text="Select JSON file to pre-fill the form:")
+    json_label.pack(pady=20)
+    json_button = ttk.Button(json_frame, text="Browse", command=load_json_file)
+    json_button.pack(pady=20)
+
+def load_json_file():
+    file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+    if file_path:
+        with open(file_path, 'r') as file:
+            try:
+                data = json.load(file)
+                fill_form_with_json(data)
+            except json.JSONDecodeError:
+                messagebox.showerror("Error", "Invalid JSON file.")
+
+def fill_form_with_json(data):
+    try:
+        date_entry.insert(0, data["date"])
+        name_entry.insert(0, data["name"])
+        first_name_entry.insert(0, data["first name"])
+        last_name_entry.insert(0, data["last name"])
+        phone_entry.insert(0, data["phone"])
+        email_entry.insert(0, data["email"])
+        address_entry.insert(0, data["address"])
+        city_entry.insert(0, data["city"])
+        state_entry.insert(0, data["state"])
+        zip_entry.insert(0, data["zip"])
+        company_entry.insert(0, data["company"])
+        case_entry.insert(0, data["case"])
+        time_entry.insert(0, data["time"])
+        person_represented_entry.insert(0, data["person represented"])
+        case_number_entry.insert(0, data["case number"])
+        unit_number_entry.insert(0, data["unit number"])
+        country_entry.insert(0, data["country"])
+        message_entry.insert("1.0", data["message"])
+    except KeyError as e:
+        messagebox.showerror("Error", f"Missing key in JSON file: {e}")
 
 def select_counties():
     selected_counties = [county for county, var in county_vars.items() if var.get()]
@@ -2366,6 +2418,7 @@ def draw_county_selection():
     canvas.create_window(450, y_position + 50, window=next_button, anchor="w")
 
     county_selection_window.mainloop()
+
 if __name__ == "__main__":
     results = []
 
