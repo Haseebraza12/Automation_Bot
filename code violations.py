@@ -2142,7 +2142,6 @@ def process_form(url, retries=3):
     
     return result
 
-
 def save_results(results, filename):
     import csv
     keys = results[0].keys()
@@ -2150,9 +2149,9 @@ def save_results(results, filename):
         dict_writer = csv.DictWriter(output_file, fieldnames=keys)
         dict_writer.writeheader()
         dict_writer.writerows(results)
-
-def update_progress_bar(progress_bar, progress_var, value):
+def update_progress_bar(progress_bar, progress_var, value, progress_label, message):
     progress_var.set(value)
+    progress_label.config(text=message)
     progress_bar.update_idletasks()
 
 def run_processing(urls, results, progress_queue, output_filename):
@@ -2165,13 +2164,13 @@ def run_processing(urls, results, progress_queue, output_filename):
                 results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
             except Exception as e:
                 results.append({"url": url, "status": "failed", "confirmation": "", "error": str(e)})
-            progress_queue.put(i + 1)
+            progress_queue.put((i + 1, f"Processing {url}"))
 
     # Save results
     save_results(results, output_filename)
 
     # Signal that processing is complete
-    progress_queue.put(None)
+    progress_queue.put((None, "Processing complete"))
 
 def create_gradient(canvas, width, height):
     for i in range(height):
@@ -2220,23 +2219,26 @@ def submit_form():
         return
     
     # Create a new window for the progress bar
-    global progress_window, progress_var, progress_bar, progress_queue
+    global progress_window, progress_var, progress_bar, progress_queue, progress_label
     progress_window = tk.Toplevel(root)
     progress_window.title("Processing Progress")
     
     progress_var = tk.DoubleVar()
-    progress_bar = ttk.Progressbar(progress_window, variable=progress_var, maximum=len(selected_counties))
+    progress_bar = ttk.Progressbar(progress_window, variable=progress_var, maximum=len(selected_counties), length=400)
     progress_bar.pack(pady=20, padx=20)
+    
+    progress_label = tk.Label(progress_window, text="Starting processing...")
+    progress_label.pack(pady=10)
     
     progress_queue = queue.Queue()
     
     def process_queue():
         try:
-            value = progress_queue.get_nowait()
+            value, message = progress_queue.get_nowait()
             if value is None:
                 progress_window.quit()
             else:
-                update_progress_bar(progress_bar, progress_var, value)
+                update_progress_bar(progress_bar, progress_var, value, progress_label, message)
             progress_window.after(100, process_queue)
         except queue.Empty:
             progress_window.after(100, process_queue)
@@ -2248,7 +2250,7 @@ def submit_form():
     for county in selected_counties:
         if county in urls:
             threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename)).start()
-
+            
 def draw_form_fields():
     global entries
     entries = {}
