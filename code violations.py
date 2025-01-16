@@ -2142,7 +2142,8 @@ def process_form(url, retries=3):
     
     return result
 
-def save_results(results, filename="submission_results.csv"):
+
+def save_results(results, filename):
     import csv
     keys = results[0].keys()
     with open(filename, 'w', newline='') as output_file:
@@ -2150,12 +2151,11 @@ def save_results(results, filename="submission_results.csv"):
         dict_writer.writeheader()
         dict_writer.writerows(results)
 
-
 def update_progress_bar(progress_bar, progress_var, value):
     progress_var.set(value)
     progress_bar.update_idletasks()
 
-def run_processing(urls, results, progress_queue):
+def run_processing(urls, results, progress_queue, output_filename):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_url = {executor.submit(process_form, url): url for url in urls}
         for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
@@ -2168,7 +2168,7 @@ def run_processing(urls, results, progress_queue):
             progress_queue.put(i + 1)
 
     # Save results
-    save_results(results)
+    save_results(results, output_filename)
 
     # Signal that processing is complete
     progress_queue.put(None)
@@ -2203,12 +2203,14 @@ def submit_form():
         "case number": case_number_entry.get(),
         "unit number": unit_number_entry.get(),
         "country": country_entry.get(),
-        "message": message_entry.get("1.0", tk.END)
+        "message": message_entry.get("1.0", tk.END),
+        "output path": output_path_entry.get(),
+        "output filename": output_filename_entry.get()
     }
     
     # Check if all fields are filled
     for key, value in form_data.items():
-        if not value.strip():
+        if not value.strip() and key not in ["output path", "output filename"]:
             messagebox.showerror("Error", f"Please fill in the {key} field.")
             return
     
@@ -2241,9 +2243,11 @@ def submit_form():
     
     process_queue()
     
+    output_filename = f"{form_data['output path']}/{form_data['output filename']}.csv"
+    
     for county in selected_counties:
         if county in urls:
-            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue)).start()
+            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename)).start()
 
 def draw_form_fields():
     global entries
@@ -2268,7 +2272,9 @@ def draw_form_fields():
         ("Case Number", "case_number_entry"),
         ("Unit Number", "unit_number_entry"),
         ("Country", "country_entry"),
-        ("Message", "message_entry")
+        ("Message", "message_entry"),
+        ("Output Path", "output_path_entry"),
+        ("Output Filename", "output_filename_entry")
     ]):
         label = ttk.Label(form_frame, text=field, font=("Helvetica", 10, "bold"), background="#808080") 
         canvas.create_window(x_position, y_position, window=label, anchor="w")
@@ -2285,7 +2291,7 @@ def draw_form_fields():
         else:
             x_position += 400
 
-    global date_entry, name_entry, first_name_entry, last_name_entry, phone_entry, email_entry, address_entry, city_entry, state_entry, zip_entry, company_entry, case_entry, time_entry, person_represented_entry, case_number_entry, unit_number_entry, country_entry, message_entry
+    global date_entry, name_entry, first_name_entry, last_name_entry, phone_entry, email_entry, address_entry, city_entry, state_entry, zip_entry, company_entry, case_entry, time_entry, person_represented_entry, case_number_entry, unit_number_entry, country_entry, message_entry, output_path_entry, output_filename_entry
     date_entry = entries["date_entry"]
     name_entry = entries["name_entry"]
     first_name_entry = entries["first_name_entry"]
@@ -2304,10 +2310,11 @@ def draw_form_fields():
     unit_number_entry = entries["unit_number_entry"]
     country_entry = entries["country_entry"]
     message_entry = entries["message_entry"]
+    output_path_entry = entries["output_path_entry"]
+    output_filename_entry = entries["output_filename_entry"]
 
     submit_button = ttk.Button(form_frame, text="Submit", command=submit_form)
     canvas.create_window(300, y_position + 50, window=submit_button, anchor="w")
-
 
 def open_form_window():
     global root, canvas, form_frame, json_frame
