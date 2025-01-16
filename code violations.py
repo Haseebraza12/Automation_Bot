@@ -2150,6 +2150,7 @@ def save_results(results, filename="submission_results.csv"):
         dict_writer.writeheader()
         dict_writer.writerows(results)
 
+
 def update_progress_bar(progress_bar, progress_var, value):
     progress_var.set(value)
     progress_bar.update_idletasks()
@@ -2307,6 +2308,7 @@ def draw_form_fields():
     submit_button = ttk.Button(form_frame, text="Submit", command=submit_form)
     canvas.create_window(300, y_position + 50, window=submit_button, anchor="w")
 
+
 def open_form_window():
     global root, canvas, form_frame, json_frame
     root = tk.Toplevel()
@@ -2326,7 +2328,7 @@ def open_form_window():
 
     # Create a canvas for the form
     global canvas
-    canvas = tk.Canvas(form_frame, width=1000, height=1000)
+    canvas = tk.Canvas(form_frame, width=1000, height=1000, bg="#808080")
     canvas.pack(fill="both", expand=True)
 
     # Create the gradient background
@@ -2335,17 +2337,17 @@ def open_form_window():
 
     draw_form_fields()
 
-    # Add JSON file selection components
-    json_label = ttk.Label(json_frame, text="Select JSON file to pre-fill the form:")
-    json_label.pack(pady=20)
-    json_button = ttk.Button(json_frame, text="Browse", command=load_json_file)
-    json_button.pack(pady=20)
-
     # Create the gradient background for JSON frame
-    json_canvas = tk.Canvas(json_frame, width=1000, height=1000)
+    json_canvas = tk.Canvas(json_frame, width=1000, height=1000, bg="#808080")
     json_canvas.pack(fill="both", expand=True)
     create_gradient(json_canvas, 1000, 1000)
     json_canvas.bind("<Configure>", resize_canvas)
+
+    # Add JSON file selection components
+    json_label = ttk.Label(json_canvas, text="Select JSON file to pre-fill the form:", font=("Helvetica", 10, "bold"), background="#808080")
+    json_canvas.create_window(500, 100, window=json_label)
+    json_button = ttk.Button(json_canvas, text="Browse", command=load_json_file)
+    json_canvas.create_window(500, 150, window=json_button)
 
 def load_json_file():
     file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
