@@ -2341,6 +2341,12 @@ def open_form_window():
     json_button = ttk.Button(json_frame, text="Browse", command=load_json_file)
     json_button.pack(pady=20)
 
+    # Create the gradient background for JSON frame
+    json_canvas = tk.Canvas(json_frame, width=1000, height=1000)
+    json_canvas.pack(fill="both", expand=True)
+    create_gradient(json_canvas, 1000, 1000)
+    json_canvas.bind("<Configure>", resize_canvas)
+
 def load_json_file():
     file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
     if file_path:
@@ -2399,7 +2405,7 @@ def draw_county_selection():
     county_vars = {}
     for county in urls.keys():
         var = tk.BooleanVar()
-        checkbox = ttk.Checkbutton(county_selection_window, text=county, variable=var)
+        checkbox = ttk.Checkbutton(county_selection_window, text=county, variable=var, style="County.TCheckbutton")
         canvas.create_window(x_position, y_position, window=checkbox, anchor="w")
         county_vars[county] = var
         x_position += 200
@@ -2417,6 +2423,10 @@ def draw_county_selection():
 
     next_button = ttk.Button(county_selection_window, text="Next", command=on_next)
     canvas.create_window(450, y_position + 50, window=next_button, anchor="w")
+
+    # Style for checkbuttons
+    style = ttk.Style()
+    style.configure("County.TCheckbutton", font=("Helvetica", 10, "bold"), background="#808080")
 
     county_selection_window.mainloop()
 
