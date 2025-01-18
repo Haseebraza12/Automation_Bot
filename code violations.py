@@ -15,6 +15,12 @@ import tkinter as tk
 from tkinter import ttk,messagebox,filedialog
 import queue
 import json
+import openpyxl
+from openpyxl.styles import PatternFill, Font
+import os
+import csv
+from datetime import datetime
+
 # Sample form_data (this should be replaced with actual form data as required)
 '''form_data = {
     "date":"13/12/2024",
@@ -2055,7 +2061,6 @@ def handle_cityofgriffin_form(driver, url):
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
     
-
 def process_form(url, retries=3):
     for attempt in range(retries):
         driver = create_driver()
@@ -2130,31 +2135,128 @@ def process_form(url, retries=3):
             elif url == "https://www.cityofgriffin.com/services/open-records":
                 result = handle_cityofgriffin_form(driver, url)
             else:
-                result = {"status": "unknown", "confirmation": "", "error": "Unknown URL"}
+                result = {
+                    "Submitted Request": False,
+                    "Notes": "",
+                    "Security Key": "",
+                    "Request/Reference Number": "",
+                    "Date Of Received": "",
+                    "Received Records": "",
+                    "Records Processed": ""
+                }
             
             return result
         except Exception as e:
             print(f"Attempt {attempt + 1} failed for {url}: {str(e)}")
-            result = {"status": "failed", "confirmation": "", "error": str(e)}
+            result = {
+                "Submitted Request": False,
+                "Notes": "",
+                "Security Key": "",
+                "Request/Reference Number": "",
+                "Date Of Received": "",
+                "Received Records": "",
+                "Records Processed": "",
+                "error": str(e)
+            }
             time.sleep(5)  # Wait before retrying
         finally:
             driver.quit()
     
     return result
 
-def save_results(results, filename):
-    import csv
-    keys = results[0].keys()
-    with open(filename, 'w', newline='') as output_file:
-        dict_writer = csv.DictWriter(output_file, fieldnames=keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(results)
+def change_message(message):
+    print(message)
+
+def save_results(county_name, results, save_path, filename):
+    # Define the path to the spreadsheet
+    START_DATE = datetime.now().strftime("%Y-%m-%d")
+    END_DATE = ""
+    file_name = START_DATE + "_" + END_DATE + ".xlsx"
+    file_name = file_name.replace('/', '-')
+    file_path = os.path.join(save_path, file_name)
+    change_message("Standardizing addresses for " + county_name)
+
+    # Check if the spreadsheet already exists
+    if os.path.exists(file_path):
+        workbook = openpyxl.load_workbook(file_path)
+    else:
+        workbook = openpyxl.Workbook()
+
+    # Remove the default sheet if it exists
+    if "Sheet" in workbook.sheetnames:
+        del workbook["Sheet"]
+
+    # Create or select the Analytics sheet
+    if "Analytics" in workbook.sheetnames:
+        analytics_sheet = workbook["Analytics"]
+    else:
+        analytics_sheet = workbook.create_sheet(title="Analytics")
+
+    # Create or select the Responses sheet
+    if "Responses" in workbook.sheetnames:
+        responses_sheet = workbook["Responses"]
+    else:
+        responses_sheet = workbook.create_sheet(title="Responses")
+
+    # Define the yellow fill for header cells
+    yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+
+    # Define the headers for the Analytics sheet
+    analytics_headers = [
+        'Date Of Request', 'Court', 'Submitted Request', 'Notes',
+        'Security Key', 'Request/Reference Number', 'Date Of Received',
+        'Received Records', 'Records Processed'
+    ]
+
+    # Write headers if the Analytics sheet is new
+    if analytics_sheet.max_row == 1:
+        analytics_sheet.append(analytics_headers)
+        for col_num, header in enumerate(analytics_headers, 1):
+            cell = analytics_sheet.cell(row=1, column=col_num)
+            cell.font = Font(bold=True)
+            cell.fill = yellow_fill
+        analytics_sheet.row_dimensions[1].height = 30  # Increase the height of the header row
+
+    # Define the headers for the Responses sheet
+    responses_headers = [
+        'Date Of Request', 'Court', 'Submitted Request', 'Notes',
+        'Security Key', 'Request/Reference Number', 'Date Of Received',
+        'Received Records', 'Records Processed'
+    ]
+
+    # Write headers if the Responses sheet is new
+    if responses_sheet.max_row == 1:
+        responses_sheet.append(responses_headers)
+        for col_num, header in enumerate(responses_headers, 1):
+            cell = responses_sheet.cell(row=1, column=col_num)
+            cell.font = Font(bold=True)
+            cell.fill = yellow_fill
+        responses_sheet.row_dimensions[1].height = 30  # Increase the height of the header row
+
+    # Append the results to the Responses sheet
+    for result in results:
+        row = [
+            datetime.now().strftime("%Y-%m-%d"),  # Date Of Request
+            county_name,  # Court
+            "TRUE" if result.get('Submitted Request', False) else "FALSE",  # Submitted Request
+            result.get('Notes', ""),  # Notes
+            result.get('Security Key', ""),  # Security Key
+            result.get('Request/Reference Number', ""),  # Request/Reference Number
+            result.get('Date Of Received', ""),  # Date Of Received
+            result.get('Received Records', ""),  # Received Records
+            result.get('Records Processed', "")  # Records Processed
+        ]
+        responses_sheet.append(row)
+
+    # Save the workbook
+    workbook.save(os.path.join(save_path, filename))
+
 def update_progress_bar(progress_bar, progress_var, value, progress_label, message):
     progress_var.set(value)
     progress_label.config(text=message)
     progress_bar.update_idletasks()
 
-def run_processing(urls, results, progress_queue, output_filename):
+def run_processing(urls, results, progress_queue, output_filename, save_path):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_url = {executor.submit(process_form, url): url for url in urls}
         for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
@@ -2167,10 +2269,12 @@ def run_processing(urls, results, progress_queue, output_filename):
             progress_queue.put((i + 1, f"Processing {url}"))
 
     # Save results
-    save_results(results, output_filename)
+    print(results)
+    save_results("County Name", results, save_path, output_filename)
 
     # Signal that processing is complete
     progress_queue.put((None, "Processing complete"))
+
 
 def create_gradient(canvas, width, height):
     for i in range(height):
@@ -2203,7 +2307,7 @@ def submit_form():
         "unit number": unit_number_entry.get(),
         "country": country_entry.get(),
         "message": message_entry.get("1.0", tk.END),
-        "output path": output_path_entry.get(),
+        "output path": entries.get("output_path_entry", ""),
         "output filename": output_filename_entry.get()
     }
     
@@ -2246,11 +2350,12 @@ def submit_form():
     process_queue()
     
     output_filename = f"{form_data['output path']}/{form_data['output filename']}.csv"
+    save_path = form_data['output path']
     
     for county in selected_counties:
         if county in urls:
-            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename)).start()
-            
+            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path)).start()
+
 def draw_form_fields():
     global entries
     entries = {}
@@ -2275,7 +2380,6 @@ def draw_form_fields():
         ("Unit Number", "unit_number_entry"),
         ("Country", "country_entry"),
         ("Message", "message_entry"),
-        ("Output Path", "output_path_entry"),
         ("Output Filename", "output_filename_entry")
     ]):
         label = ttk.Label(form_frame, text=field, font=("Helvetica", 10, "bold"), background="#808080") 
@@ -2293,7 +2397,7 @@ def draw_form_fields():
         else:
             x_position += 400
 
-    global date_entry, name_entry, first_name_entry, last_name_entry, phone_entry, email_entry, address_entry, city_entry, state_entry, zip_entry, company_entry, case_entry, time_entry, person_represented_entry, case_number_entry, unit_number_entry, country_entry, message_entry, output_path_entry, output_filename_entry
+    global date_entry, name_entry, first_name_entry, last_name_entry, phone_entry, email_entry, address_entry, city_entry, state_entry, zip_entry, company_entry, case_entry, time_entry, person_represented_entry, case_number_entry, unit_number_entry, country_entry, message_entry, output_filename_entry
     date_entry = entries["date_entry"]
     name_entry = entries["name_entry"]
     first_name_entry = entries["first_name_entry"]
@@ -2312,12 +2416,18 @@ def draw_form_fields():
     unit_number_entry = entries["unit_number_entry"]
     country_entry = entries["country_entry"]
     message_entry = entries["message_entry"]
-    output_path_entry = entries["output_path_entry"]
     output_filename_entry = entries["output_filename_entry"]
 
-    submit_button = ttk.Button(form_frame, text="Submit", command=submit_form)
-    canvas.create_window(300, y_position + 50, window=submit_button, anchor="w")
+    def select_directory_dialog():
+        directory_path = filedialog.askdirectory()
+        if directory_path:
+            entries["output_path_entry"] = directory_path
 
+    directory_button = ttk.Button(form_frame, text="Select Directory", command=select_directory_dialog)
+    canvas.create_window(300, y_position + 50, window=directory_button, anchor="w")
+
+    submit_button = ttk.Button(form_frame, text="Submit", command=submit_form)
+    canvas.create_window(300, y_position + 100, window=submit_button, anchor="w")
 def open_form_window():
     global root, canvas, form_frame, json_frame
     root = tk.Toplevel()
