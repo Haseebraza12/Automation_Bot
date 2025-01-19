@@ -1812,6 +1812,69 @@ def handle_forestparkga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+def handle_acworthga_form(driver, url):
+    try:
+        driver.get(url)
+        wait = WebDriverWait(driver, 20)
+
+        # Wait for page to load completely
+        time.sleep(7)
+
+        # Fill all fields
+        fields_to_fill = {
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[2]/div[1]/input": form_data["phone"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[3]/div[1]/input": form_data["email"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div[1]/input": form_data["address"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div[1]/input": form_data["city"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div[1]/input": form_data["state"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div[1]/input": form_data["zip"]
+        }
+
+        for xpath, value in fields_to_fill.items():
+            fill_field(driver, wait, xpath, value)
+
+        # Fill request details
+        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div[1]/textarea"
+        details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
+        details.clear()
+        details.send_keys(form_data["message"])
+        print("Filled request details")
+
+        # Handle dropdown selection
+        dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div[1]/select"
+        dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
+        available_options = [o.text.strip() for o in dropdown1.options]
+        print("Available options in dropdown:", available_options)
+        dropdown1.select_by_visible_text("Only to review / inspect")  # Adjust text as per available options
+        print("Selected dropdown option")
+
+        # Take screenshot before submission
+        driver.save_screenshot("before_submit.png")
+
+        # Submit form
+        submit_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button"
+        submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
+        driver.execute_script("arguments[0].click();", submit_button)
+        print("Clicked submit button")
+
+        # Delay of 15 seconds after form submission
+        time.sleep(60)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
+            security_key = re.search(r"Your security key is (\S+)", confirmation_message).group(1)
+            reference_number = re.search(r"Your request reference number is (\S+)", confirmation_message).group(1)
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
+
+    except Exception as e:
+        print(f"Error in form handling: {str(e)}")
+        driver.save_screenshot("error_main.png")
+        return {"status": "Failed", "error": str(e)}
     
 def save_results(results, filename="submission2_results.csv"):
     try:
@@ -1887,6 +1950,8 @@ def process_form(url,retries=3):
             result = handle_riverdale_form(driver, url)
         elif url == "https://forestparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
             result = handle_forestparkga_form(driver, url)
+        elif url == "https://acworthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+            result = handle_acworthga_form(driver, url)
         else:
             result = {"status": "unknown", "confirmation": "", "error": "Unknown URL"}
     except Exception as e:
