@@ -398,7 +398,6 @@ def handle_doravillega_form(driver, url):
    
 
 def handle_albanyga_form(driver, url):
- 
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -435,11 +434,11 @@ def handle_albanyga_form(driver, url):
         dropdown1.select_by_visible_text("Only to review / inspect")  # Adjust text as per available options
         print("Selected dropdown option")
 
+        # Handle checkboxes
         checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[18]/div/div[1]/div/div/div/div/div/div/div"
-        for checkbox_xpath in [checkbox1_xpath]:
-            checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
-            driver.execute_script("arguments[0].click();", checkbox)
-            print(f"Checked {checkbox_xpath}")
+        checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox1_xpath)))
+        driver.execute_script("arguments[0].click();", checkbox)
+        print(f"Checked {checkbox1_xpath}")
 
         # Take screenshot before submission
         driver.save_screenshot("before_submit.png")
@@ -449,16 +448,26 @@ def handle_albanyga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+
+        # Delay of 15 seconds after form submission
+        time.sleep(60)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
+            security_key = re.search(r"Your security key is (\S+)", confirmation_message).group(1)
+            reference_number = re.search(r"Your request reference number is (\S+)", confirmation_message).group(1)
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-  
 
-def handle_riverdale_form(driver, url):
+def handle_riverdalega_form(driver, url):
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
