@@ -8,6 +8,8 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
+import re
 import concurrent.futures
 from tqdm import tqdm
 import tkinter as tk
@@ -775,8 +777,6 @@ def handle_eastpointga_form(driver, url):
         details.send_keys(form_data["message"])
         print("Filled request details")
 
-       
-
         checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[15]/div/div[1]/div/div/div/div/div/div/div"
         for checkbox_xpath in [checkbox1_xpath]:
             checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
@@ -791,13 +791,22 @@ def handle_eastpointga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+
+        # Delay of 15 seconds after form submission
+        time.sleep(60)
+
+        # Extract confirmation message
+        confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number')]").text
+        reference_number = re.search(r"Your request reference number is (\S+)", confirmation_message).group(1)
+        security_key = re.search(r"Your security key is (\S+)", confirmation_message).group(1)
+
+        return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+
     
 
 def handle_woodstockga_form(driver, url):
