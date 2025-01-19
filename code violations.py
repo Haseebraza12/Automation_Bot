@@ -20,7 +20,7 @@ from openpyxl.styles import PatternFill, Font
 import os
 import csv
 from datetime import datetime
-
+from openpyxl.utils import get_column_letter
 # Sample form_data (this should be replaced with actual form data as required)
 '''form_data = {
     "date":"13/12/2024",
@@ -2061,12 +2061,12 @@ def handle_cityofgriffin_form(driver, url):
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
     
+
 def process_form(url, retries=3):
     for attempt in range(retries):
         driver = create_driver()
         wait = WebDriverWait(driver, 20)
         driver.get(url)
-        
         try:
             if url == "https://tuckerga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
                 result = handle_tucker_form(driver, url)
@@ -2205,7 +2205,7 @@ def save_results(county_name, results, save_path, filename):
     analytics_headers = [
         'Date Of Request', 'Court', 'Submitted Request', 'Notes',
         'Security Key', 'Request/Reference Number', 'Date Of Received',
-        'Received Records', 'Records Processed'
+        'Received Records', 'Records Processed', 'URL'
     ]
 
     # Write headers if the Analytics sheet is new
@@ -2221,7 +2221,7 @@ def save_results(county_name, results, save_path, filename):
     responses_headers = [
         'Date Of Request', 'Court', 'Submitted Request', 'Notes',
         'Security Key', 'Request/Reference Number', 'Date Of Received',
-        'Received Records', 'Records Processed'
+        'Received Records', 'Records Processed', 'URL'
     ]
 
     # Write headers if the Responses sheet is new
@@ -2244,13 +2244,33 @@ def save_results(county_name, results, save_path, filename):
             result.get('Request/Reference Number', ""),  # Request/Reference Number
             result.get('Date Of Received', ""),  # Date Of Received
             result.get('Received Records', ""),  # Received Records
-            result.get('Records Processed', "")  # Records Processed
+            result.get('Records Processed', ""),  # Records Processed
+            result.get('URL', "")  # URL
         ]
         responses_sheet.append(row)
+     # Adjust column widths to fit content for both sheets
+    for sheet in [analytics_sheet, responses_sheet]:
+        for column in sheet.columns:
+            max_length = 0
+            column_letter = get_column_letter(column[0].column)  # Get the column name
+            for cell in column:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 5)  # Add padding for better view
+            sheet.column_dimensions[column_letter].width = adjusted_width
 
     # Save the workbook
-    workbook.save(os.path.join(save_path, filename))
+    try:
+        workbook.save(os.path.join(save_path, filename))
+    except PermissionError:
+        print(f"Permission denied: Unable to save the file at {os.path.join(save_path, filename)}. Please close the file if it is open and try again.")
 
+   
+
+    
 def update_progress_bar(progress_bar, progress_var, value, progress_label, message):
     progress_var.set(value)
     progress_label.config(text=message)
