@@ -2479,6 +2479,7 @@ def submit_form():
     for county in selected_counties:
         if county in urls:
             threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path)).start()
+import json
 
 def draw_form_fields():
     global entries
@@ -2547,11 +2548,23 @@ def draw_form_fields():
         if directory_path:
             entries["output_path_entry"] = directory_path
 
+    def save_template():
+        template_data = {var_name: entry.get("1.0", tk.END).strip() if isinstance(entry, tk.Text) else entry.get() for var_name, entry in entries.items()}
+        save_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+        if save_path:
+            with open(save_path, 'w') as json_file:
+                json.dump(template_data, json_file, indent=4)
+            messagebox.showinfo("Success", "Template saved successfully.")
+
     directory_button = ttk.Button(form_frame, text="Select Directory", command=select_directory_dialog)
     canvas.create_window(300, y_position + 50, window=directory_button, anchor="w")
 
+    save_template_button = ttk.Button(form_frame, text="Save Template", command=save_template)
+    canvas.create_window(500, y_position + 50, window=save_template_button, anchor="w")
+
     submit_button = ttk.Button(form_frame, text="Submit", command=submit_form)
     canvas.create_window(300, y_position + 100, window=submit_button, anchor="w")
+    
 def open_form_window():
     global root, canvas, form_frame, json_frame
     root = tk.Toplevel()
@@ -2648,6 +2661,19 @@ def draw_county_selection():
     x_position = 50
     y_position = 50
     county_vars = {}
+
+    # Add Select All checkbox
+    select_all_var = tk.BooleanVar()
+    select_all_checkbox = ttk.Checkbutton(county_selection_window, text="Select All", variable=select_all_var, style="County.TCheckbutton")
+    canvas.create_window(x_position, y_position, window=select_all_checkbox, anchor="w")
+    y_position += 30
+
+    def toggle_select_all():
+        for var in county_vars.values():
+            var.set(select_all_var.get())
+
+    select_all_var.trace_add("write", lambda *args: toggle_select_all())
+
     for county in urls.keys():
         var = tk.BooleanVar()
         checkbox = ttk.Checkbutton(county_selection_window, text=county, variable=var, style="County.TCheckbutton")
