@@ -638,11 +638,11 @@ def handle_kennesawga_form(driver, url):
         details.send_keys(form_data["message"])
         print("Filled request details")
 
+        # Handle checkbox selection
         checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[16]/div/div[1]/div/div/div/div/div/div/div"
-        for checkbox_xpath in [checkbox1_xpath]:
-            checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
-            driver.execute_script("arguments[0].click();", checkbox)
-            print(f"Checked {checkbox_xpath}")
+        checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox1_xpath)))
+        driver.execute_script("arguments[0].click();", checkbox)
+        print(f"Checked {checkbox1_xpath}")
 
         # Take screenshot before submission
         driver.save_screenshot("before_submit.png")
@@ -652,8 +652,25 @@ def handle_kennesawga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+
+        # Delay of 15 seconds after form submission
+        time.sleep(20)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            if security_key_match and reference_number_match:
+                security_key = security_key_match.group(1)
+                reference_number = reference_number_match.group(1)
+                return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+            else:
+                print("Confirmation message found but could not extract reference number or security key")
+                return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
