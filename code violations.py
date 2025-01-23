@@ -954,7 +954,6 @@ def handle_collegeparkga_form(driver, url):
             print(f"Error in form handling: {str(e)}")
             driver.save_screenshot("error_main.png")
             return {"status": "Failed", "error": str(e)}
-
 def handle_powderspringsga_form(driver, url):
     try:
         driver.get(url)
@@ -991,7 +990,8 @@ def handle_powderspringsga_form(driver, url):
         print("Available options in dropdown:", available_options)
         dropdown1.select_by_visible_text("Only to review / inspect")  # Adjust text as per available options
         print("Selected dropdown option")
-        #checkbox
+
+        # Handle checkbox selection
         checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div[1]/div/div/div/div/div/div/div"
         for checkbox_xpath in [checkbox1_xpath]:
             checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
@@ -1006,8 +1006,27 @@ def handle_powderspringsga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+        time.sleep(30)
+
+    
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            if security_key_match:
+                security_key = security_key_match.group(1)
+            else:
+                security_key = ""
+                print("Security key not found in confirmation message")
+            if reference_number_match:
+                reference_number = reference_number_match.group(1)
+            else:
+                reference_number = ""
+                print("Reference number not found in confirmation message")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
