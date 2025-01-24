@@ -84,6 +84,7 @@ def create_driver():
     
     # Return the initialized driver
     return webdriver.Chrome(options=chrome_options)
+
 def fill_field(driver, wait, xpath, value):
     try:
         field = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
@@ -155,9 +156,8 @@ def handle_tucker_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(30)
 
-  
         # Extract confirmation message
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
@@ -236,6 +236,7 @@ def handle_forestparkga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+    
 def handle_austellga_form(driver, url):
     try:
         driver.get(url)
@@ -283,7 +284,7 @@ def handle_austellga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(30)
 
         # Extract confirmation message
         try:
@@ -347,7 +348,7 @@ def handle_acworthga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(30)
 
         # Extract confirmation message
         try:
@@ -409,14 +410,28 @@ def handle_doravillega_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+       # Delay of 15 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-   
 
 def handle_albanyga_form(driver, url):
     try:
@@ -471,7 +486,7 @@ def handle_albanyga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(30)
 
         # Extract confirmation message
         try:
@@ -600,8 +615,23 @@ def handle_cityofmorrowga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+       # Delay of 15 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
@@ -954,6 +984,7 @@ def handle_collegeparkga_form(driver, url):
             print(f"Error in form handling: {str(e)}")
             driver.save_screenshot("error_main.png")
             return {"status": "Failed", "error": str(e)}
+    
 def handle_powderspringsga_form(driver, url):
     try:
         driver.get(url)
@@ -1032,6 +1063,7 @@ def handle_powderspringsga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+    
 def handle_conyersga_form(driver, url):
     try:
         driver.get(url)
@@ -1094,6 +1126,7 @@ def handle_conyersga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+    
 def handle_spaldingcountyga_form(driver, url):
     try:
         driver.get(url)
@@ -1154,6 +1187,7 @@ def handle_spaldingcountyga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+    
 def handle_stockbridgega_form(driver, url):
     try:
         driver.get(url)
@@ -1308,13 +1342,28 @@ def handle_cityofstonecrestga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+       # Delay of 15 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
-        return {"status": "Failed", "error": str(e)} 
+        return {"status": "Failed", "error": str(e)}
 
 
 def handle_peachtreecitygapolice_form(driver, url):
@@ -1359,9 +1408,6 @@ def handle_peachtreecitygapolice_form(driver, url):
                     # Handle dropdown selection (corrected)
         dropdown2_xpath = "/html/body/main/div/main/section/div/div[1]/form/div[1]/div[4]/div/div/div/div/div[1]/input"
         dropdown2 = wait.until(EC.presence_of_element_located((By.XPATH, dropdown2_xpath)))
-
-
-
    # Clear the dropdown input field
         dropdown2.clear()
 
@@ -1372,9 +1418,6 @@ def handle_peachtreecitygapolice_form(driver, url):
 # Press Enter to confirm the selection
         dropdown2.send_keys(Keys.ENTER)
         print("Pressed Enter to select 'Library'")
-
-
-        
         # check
         checkbox1_xpath = "/html/body/main/div/main/section/div/div[1]/form/div[3]/div[2]/div/div/input"
         for checkbox_xpath in [checkbox1_xpath]:
@@ -1389,8 +1432,23 @@ def handle_peachtreecitygapolice_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+       # Delay of 15 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
@@ -1434,7 +1492,6 @@ def handle_cityofclarkstonga_form(driver, url):
             # Click to open dropdown
             dropdown1.click()
             time.sleep(1)
-            
             # Create Select object
             select = Select(dropdown1)
             
@@ -1480,16 +1537,28 @@ def handle_cityofclarkstonga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-
-        return {"status": "Success", "confirmation": "Form submitted"}
+       # Delay of 15 seconds after form submission
+        time.sleep(30)
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-
-
+    
 def handle_cantonga_form(driver, url):
     try:
         driver.get(url)
@@ -1665,8 +1734,6 @@ def handle_cherokeecountyga_form(driver, url):
         dropdown2_xpath = "/html/body/main/div/main/section/div/div[1]/form/div[1]/div[4]/div/div/div/div/div[1]/input"
         dropdown2 = wait.until(EC.presence_of_element_located((By.XPATH, dropdown2_xpath)))
 
-
-
    # Clear the dropdown input field
         dropdown2.clear()
 
@@ -1685,8 +1752,23 @@ def handle_cherokeecountyga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+       # Delay of 15 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
@@ -1746,8 +1828,23 @@ def handle_cityofaugustaga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+       # Delay of 15 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
@@ -1863,7 +1960,7 @@ def handle_eastpointga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(30)
 
         # Extract confirmation message
         confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number')]").text
@@ -2190,7 +2287,6 @@ def handle_norcrossga_form(driver, url):
   
 
 def handle_lilburnga_form(driver, url):
-
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -2219,7 +2315,8 @@ def handle_lilburnga_form(driver, url):
         details.clear()
         details.send_keys(form_data["message"])
         print("Filled request details")
-        
+
+        # Handle dropdown selection
         dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[16]/div/div[1]/select"
         dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
         available_options = [o.text.strip() for o in dropdown1.options]
@@ -2227,11 +2324,11 @@ def handle_lilburnga_form(driver, url):
         dropdown1.select_by_visible_text("Download Digitally")  # Adjust text as per available options
         print("Selected dropdown option")
 
+        # Handle checkbox selection
         checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[20]/div/div[1]/div/div/div/div/div/div/div"
-        for checkbox_xpath in [checkbox1_xpath]:
-            checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
-            driver.execute_script("arguments[0].click();", checkbox)
-            print(f"Checked {checkbox_xpath}")
+        checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox1_xpath)))
+        driver.execute_script("arguments[0].click();", checkbox)
+        print(f"Checked {checkbox1_xpath}")
 
         # Take screenshot before submission
         driver.save_screenshot("before_submit.png")
@@ -2241,14 +2338,29 @@ def handle_lilburnga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+
+        # Delay of 30 seconds after form submission
+        time.sleep(30)
+
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Thank you for submitting a request for records to the City of Lilburn.')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    
+
 
 def handle_cityofgriffin_form(driver, url):
     
@@ -2301,8 +2413,23 @@ def handle_cityofgriffin_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+       # Delay of 15 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
