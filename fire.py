@@ -1307,15 +1307,15 @@ def handle_alpharettaga_form(driver, url):
         return {"status": "Failed", "error": str(e)}
     
 
-   
-def handle_norcrossga_form(driver, url):
+ def handle_norcrossga_form(driver, url):
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
 
         # Wait for page to load completely
         time.sleep(7)
-          # Handle dropdown selection
+
+        # Handle dropdown selection
         dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div/div[1]/select"
         dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
         available_options = [o.text.strip() for o in dropdown1.options]
@@ -1328,18 +1328,14 @@ def handle_norcrossga_form(driver, url):
             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div/div[1]/input": form_data["name"],
             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div/div[1]/input": form_data["phone"],
             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div/div[1]/input": form_data["email"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div/div[1]/input": form_data["address"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div/div[1]/input": form_data["city"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div/div[1]/input": form_data["state"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div/div[1]/input": form_data["zip"],
-             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[13]/div/div[1]/input": form_data["case number"]
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div/div[1]/input": form_data["case number"]
         }
 
         for xpath, value in fields_to_fill.items():
             fill_field(driver, wait, xpath, value)
 
         # Fill request details
-        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[15]/div/div[1]/textarea"
+        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[12]/div/div[1]/textarea"
         details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
         details.clear()
         details.send_keys(form_data["message"])
@@ -1353,14 +1349,29 @@ def handle_norcrossga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+
+        # Delay of 30 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-  
     
 
 def handle_cityofgriffin_form(driver, url):
