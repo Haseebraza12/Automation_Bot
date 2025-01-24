@@ -2069,9 +2069,8 @@ def handle_brookhavenga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    
+ 
 def handle_duluthga_form(driver, url):
-   
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
@@ -2084,7 +2083,7 @@ def handle_duluthga_form(driver, url):
             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div[1]/input": form_data["name"],
             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div[1]/input": form_data["phone"],
             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div[1]/input": form_data["email"],
-             "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[3]/div[1]/input": form_data["date"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[3]/div[1]/input": form_data["date"],
         }
 
         for xpath, value in fields_to_fill.items():
@@ -2097,15 +2096,15 @@ def handle_duluthga_form(driver, url):
         details.send_keys(form_data["message"])
         print("Filled request details")
 
-         # Handle dropdown selection
+        # Handle dropdown selection
         dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div[1]/select"
         dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
         available_options = [o.text.strip() for o in dropdown1.options]
         print("Available options in dropdown:", available_options)
         dropdown1.select_by_visible_text("Only to review / inspect")  # Adjust text as per available options
         print("Selected dropdown option")
-       
-        #checkbox
+
+        # Handle checkbox selection
         checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[2]/div[1]/div/div/div/div/div/div/div"
         for checkbox_xpath in [checkbox1_xpath]:
             checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
@@ -2120,8 +2119,16 @@ def handle_duluthga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+        time.sleep(30)
+
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
+            security_key = re.search(r"Your security key is (\S+)", confirmation_message).group(1)
+            reference_number = re.search(r"Your request reference number is (\S+)", confirmation_message).group(1)
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
