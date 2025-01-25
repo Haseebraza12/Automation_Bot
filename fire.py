@@ -1200,14 +1200,29 @@ def handle_sandyspringsga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+
+        # Delay of 30 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Request number:')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Security key: (\S+)", confirmation_message)
+            reference_number_match = re.search(r"Request number: (\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    
 
 def handle_roswellga_form(driver, url):
     try:
