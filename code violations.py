@@ -156,7 +156,7 @@ def handle_tucker_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -220,7 +220,7 @@ def handle_forestparkga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(15)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -284,7 +284,7 @@ def handle_austellga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -348,7 +348,7 @@ def handle_acworthga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -411,7 +411,7 @@ def handle_doravillega_form(driver, url):
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
        # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -550,7 +550,7 @@ def handle_riverdalega_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(20)
 
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
@@ -616,7 +616,7 @@ def handle_cityofmorrowga_form(driver, url):
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
        # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -755,7 +755,7 @@ def handle_smyrnaga_form(driver, url):
         print("Clicked submit button")
         
         # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -969,7 +969,7 @@ def handle_collegeparkga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -1037,7 +1037,7 @@ def handle_powderspringsga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(30)
+        time.sleep(20)
 
     
         try:
@@ -1108,7 +1108,6 @@ def handle_conyersga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(30)
 
         # Delay of 15 seconds after form submission
         time.sleep(20)
@@ -1172,7 +1171,7 @@ def handle_spaldingcountyga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(30)
+        time.sleep(20)
 
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
@@ -1235,7 +1234,7 @@ def handle_stockbridgega_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(30)
+        time.sleep(20)
 
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
@@ -1343,7 +1342,7 @@ def handle_cityofstonecrestga_form(driver, url):
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
        # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -1433,7 +1432,7 @@ def handle_peachtreecitygapolice_form(driver, url):
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
        # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -1538,7 +1537,7 @@ def handle_cityofclarkstonga_form(driver, url):
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
        # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
         # Extract confirmation message
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
@@ -1606,7 +1605,7 @@ def handle_cantonga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(20)
 
         # Extract confirmation message
         # Extract confirmation message
@@ -1672,7 +1671,7 @@ def handle_maconbibbcountyga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -1753,7 +1752,7 @@ def handle_cherokeecountyga_form(driver, url):
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
        # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -1829,7 +1828,7 @@ def handle_cityofaugustaga_form(driver, url):
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
        # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -1898,7 +1897,7 @@ def handle_woodstockga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -1960,7 +1959,7 @@ def handle_eastpointga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number')]").text
@@ -2018,7 +2017,7 @@ def handle_fairburnga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(30)
+        time.sleep(20)
 
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
@@ -2033,6 +2032,7 @@ def handle_fairburnga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+    
 def handle_hapevillega_form(driver, url):
     try:
         driver.get(url)
@@ -2086,7 +2086,7 @@ def handle_hapevillega_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -2152,7 +2152,7 @@ def handle_brookhavenga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(30)
+        time.sleep(20)
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
             security_key = re.search(r"Your security key is (\S+)", confirmation_message).group(1)
@@ -2216,7 +2216,7 @@ def handle_duluthga_form(driver, url):
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(30)
+        time.sleep(20)
 
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
@@ -2276,7 +2276,7 @@ def handle_norcrossga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 30 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:
@@ -2352,7 +2352,7 @@ def handle_lilburnga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 30 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Thank you for submitting a request for records to the City of Lilburn.')]").text
@@ -2426,7 +2426,7 @@ def handle_cityofgriffin_form(driver, url):
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
        # Delay of 15 seconds after form submission
-        time.sleep(30)
+        time.sleep(20)
 
         # Extract confirmation message
         try:

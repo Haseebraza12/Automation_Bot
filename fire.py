@@ -1307,7 +1307,7 @@ def handle_alpharettaga_form(driver, url):
         return {"status": "Failed", "error": str(e)}
     
 
- def handle_norcrossga_form(driver, url):
+def handle_norcrossga_form(driver, url):
     try:
         driver.get(url)
         wait = WebDriverWait(driver, 20)
