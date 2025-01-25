@@ -2562,7 +2562,7 @@ def save_results(county_name, results, save_path, filename):
 
     # Define the headers for the Responses sheet
     responses_headers = [
-        'Date Of Request', 'URL', 'Status', 'Reference Number', 'Security Key', 'Notes'
+        'Date Of Request', 'County', 'URL', 'Status', 'Reference Number', 'Security Key', 'Notes'
     ]
 
     # Write headers if the Responses sheet is new
@@ -2578,7 +2578,8 @@ def save_results(county_name, results, save_path, filename):
     for result in results:
         row = [
             datetime.now().strftime("%Y-%m-%d"),  # Date Of Request
-            result.get('URL', ""),  # URL
+            result.get('county', ""),  # County
+            result.get('url', ""),  # URL
             result.get('status', ""),  # Status
             result.get('reference_number', ""),  # Reference Number
             result.get('security_key', ""),  # Security Key
@@ -2610,7 +2611,7 @@ def update_progress_bar(progress_bar, progress_var, value, progress_label, messa
     progress_label.config(text=message)
     progress_bar.update_idletasks()
 
-def run_processing(urls, results, progress_queue, output_filename, save_path):
+def run_processing(urls, results, progress_queue, output_filename, save_path, county_name):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_url = {executor.submit(process_form, url): url for url in urls}
         for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
@@ -2618,6 +2619,7 @@ def run_processing(urls, results, progress_queue, output_filename, save_path):
             try:
                 result = future.result()
                 results.append({
+                    "county": county_name,
                     "url": url,
                     "status": result["status"],
                     "confirmation": result.get("confirmation", ""),
@@ -2627,6 +2629,7 @@ def run_processing(urls, results, progress_queue, output_filename, save_path):
                 })
             except Exception as e:
                 results.append({
+                    "county": county_name,
                     "url": url,
                     "status": "failed",
                     "confirmation": "",
@@ -2638,7 +2641,7 @@ def run_processing(urls, results, progress_queue, output_filename, save_path):
 
     # Save results
     print(results)
-    save_results("County Name", results, save_path, output_filename)
+    save_results(county_name, results, save_path, output_filename)
 
     # Signal that processing is complete
     progress_queue.put((None, "Processing complete"))
@@ -2652,7 +2655,6 @@ def create_gradient(canvas, width, height):
 
 def resize_canvas(event):
     create_gradient(event.widget, event.width, event.height)
-
 def submit_form():
     global form_data
     form_data = {
@@ -2721,8 +2723,7 @@ def submit_form():
     
     for county in selected_counties:
         if county in urls:
-            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path)).start()
-
+            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path, county)).start()
 
 def draw_form_fields():
     global entries
