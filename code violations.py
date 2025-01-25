@@ -2522,30 +2522,11 @@ def process_form(url, retries=3):
             elif url == "https://www.cityofgriffin.com/services/open-records":
                 result = handle_cityofgriffin_form(driver, url)
             else:
-                result = {
-                    "Submitted Request": False,
-                    "Notes": "",
-                    "Security Key": "",
-                    "Request/Reference Number": "",
-                    "Date Of Received": "",
-                    "Received Records": "",
-                    "Records Processed": ""
-                }
-            
-            return result
+                result = {"status": "unknown", "confirmation": "", "error": "Unknown URL"}
         except Exception as e:
             print(f"Attempt {attempt + 1} failed for {url}: {str(e)}")
-            result = {
-                "Submitted Request": False,
-                "Notes": "",
-                "Security Key": "",
-                "Request/Reference Number": "",
-                "Date Of Received": "",
-                "Received Records": "",
-                "Records Processed": "",
-                "error": str(e)
-            }
-            time.sleep(5)  # Wait before retrying
+            result = {"status": "failed", "confirmation": "", "error": str(e)}
+            time.sleep(5) 
         finally:
             driver.quit()
     
@@ -2557,8 +2538,7 @@ def change_message(message):
 def save_results(county_name, results, save_path, filename):
     # Define the path to the spreadsheet
     START_DATE = datetime.now().strftime("%Y-%m-%d")
-    END_DATE = ""
-    file_name = START_DATE + "_" + END_DATE + ".xlsx"
+    file_name = START_DATE + ".xlsx"
     file_name = file_name.replace('/', '-')
     file_path = os.path.join(save_path, file_name)
     change_message("Standardizing addresses for " + county_name)
@@ -2573,12 +2553,6 @@ def save_results(county_name, results, save_path, filename):
     if "Sheet" in workbook.sheetnames:
         del workbook["Sheet"]
 
-    # Create or select the Analytics sheet
-    if "Analytics" in workbook.sheetnames:
-        analytics_sheet = workbook["Analytics"]
-    else:
-        analytics_sheet = workbook.create_sheet(title="Analytics")
-
     # Create or select the Responses sheet
     if "Responses" in workbook.sheetnames:
         responses_sheet = workbook["Responses"]
@@ -2588,27 +2562,9 @@ def save_results(county_name, results, save_path, filename):
     # Define the yellow fill for header cells
     yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
 
-    # Define the headers for the Analytics sheet
-    analytics_headers = [
-        'Date Of Request', 'Court', 'Submitted Request', 'Notes',
-        'Security Key', 'Request/Reference Number', 'Date Of Received',
-        'Received Records', 'Records Processed', 'URL'
-    ]
-
-    # Write headers if the Analytics sheet is new
-    if analytics_sheet.max_row == 1:
-        analytics_sheet.append(analytics_headers)
-        for col_num, header in enumerate(analytics_headers, 1):
-            cell = analytics_sheet.cell(row=1, column=col_num)
-            cell.font = Font(bold=True)
-            cell.fill = yellow_fill
-        analytics_sheet.row_dimensions[1].height = 30  # Increase the height of the header row
-
     # Define the headers for the Responses sheet
     responses_headers = [
-        'Date Of Request', 'Court', 'Submitted Request', 'Notes',
-        'Security Key', 'Request/Reference Number', 'Date Of Received',
-        'Received Records', 'Records Processed', 'URL'
+        'Date Of Request', 'URL', 'Status', 'Reference Number', 'Security Key', 'Notes'
     ]
 
     # Write headers if the Responses sheet is new
@@ -2624,30 +2580,26 @@ def save_results(county_name, results, save_path, filename):
     for result in results:
         row = [
             datetime.now().strftime("%Y-%m-%d"),  # Date Of Request
-            county_name,  # Court
-            "TRUE" if result.get('Submitted Request', False) else "FALSE",  # Submitted Request
-            result.get('Notes', ""),  # Notes
-            result.get('Security Key', ""),  # Security Key
-            result.get('Request/Reference Number', ""),  # Request/Reference Number
-            result.get('Date Of Received', ""),  # Date Of Received
-            result.get('Received Records', ""),  # Received Records
-            result.get('Records Processed', ""),  # Records Processed
-            result.get('URL', "")  # URL
+            result.get('URL', ""),  # URL
+            result.get('status', ""),  # Status
+            result.get('reference_number', ""),  # Reference Number
+            result.get('security_key', ""),  # Security Key
+            result.get('Notes', "")  # Notes
         ]
         responses_sheet.append(row)
-     # Adjust column widths to fit content for both sheets
-    for sheet in [analytics_sheet, responses_sheet]:
-        for column in sheet.columns:
-            max_length = 0
-            column_letter = get_column_letter(column[0].column)  # Get the column name
-            for cell in column:
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(cell.value)
-                except:
-                    pass
-            adjusted_width = (max_length + 5)  # Add padding for better view
-            sheet.column_dimensions[column_letter].width = adjusted_width
+
+    # Adjust column widths to fit content for the Responses sheet
+    for column in responses_sheet.columns:
+        max_length = 0
+        column_letter = get_column_letter(column[0].column)  # Get the column name
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 5)  # Add padding for better view
+        responses_sheet.column_dimensions[column_letter].width = adjusted_width
 
     # Save the workbook
     try:
@@ -2655,9 +2607,6 @@ def save_results(county_name, results, save_path, filename):
     except PermissionError:
         print(f"Permission denied: Unable to save the file at {os.path.join(save_path, filename)}. Please close the file if it is open and try again.")
 
-   
-
-    
 def update_progress_bar(progress_bar, progress_var, value, progress_label, message):
     progress_var.set(value)
     progress_label.config(text=message)

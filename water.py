@@ -1874,12 +1874,12 @@ def save_results(results, filename="submission3_results.csv"):
         dict_writer.writerows(results)
 
 
-
-def update_progress_bar(progress_bar, progress_var, value):
+def update_progress_bar(progress_bar, progress_var, value, progress_label, message):
     progress_var.set(value)
+    progress_label.config(text=message)
     progress_bar.update_idletasks()
 
-def run_processing(urls, results, progress_queue):
+def run_processing(urls, results, progress_queue, output_filename, save_path):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_url = {executor.submit(process_form, url): url for url in urls}
         for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
@@ -1889,18 +1889,21 @@ def run_processing(urls, results, progress_queue):
                 results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
             except Exception as e:
                 results.append({"url": url, "status": "failed", "confirmation": "", "error": str(e)})
-            progress_queue.put(i + 1)
+            progress_queue.put((i + 1, f"Processing {url}"))
 
     # Save results
-    save_results(results)
+    print(results)
+    save_results("County Name", results, save_path, output_filename)
 
     # Signal that processing is complete
-    progress_queue.put(None)
+    progress_queue.put((None, "Processing complete"))
+
 
 def create_gradient(canvas, width, height):
     for i in range(height):
         grey_value = int(200 - (i * 100 / height))
-        color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'
+        canvas.create_rectangle(0, 0, width, height, fill='grey', outline='grey')
+        color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'  # Define the color as a shade of grey
         canvas.create_line(0, i, width, i, fill=color)
 
 def resize_canvas(event):
@@ -1926,12 +1929,14 @@ def submit_form():
         "case number": case_number_entry.get(),
         "unit number": unit_number_entry.get(),
         "country": country_entry.get(),
-        "message": message_entry.get("1.0", tk.END)
+        "message": message_entry.get("1.0", tk.END),
+        "output path": entries.get("output_path_entry", ""),
+        "output filename": output_filename_entry.get()
     }
     
     # Check if all fields are filled
     for key, value in form_data.items():
-        if not value.strip():
+        if not value.strip() and key not in ["output path", "output filename"]:
             messagebox.showerror("Error", f"Please fill in the {key} field.")
             return
     
@@ -1941,32 +1946,39 @@ def submit_form():
         return
     
     # Create a new window for the progress bar
-    global progress_window, progress_var, progress_bar, progress_queue
+    global progress_window, progress_var, progress_bar, progress_queue, progress_label
     progress_window = tk.Toplevel(root)
     progress_window.title("Processing Progress")
     
     progress_var = tk.DoubleVar()
-    progress_bar = ttk.Progressbar(progress_window, variable=progress_var, maximum=len(selected_counties))
+    progress_bar = ttk.Progressbar(progress_window, variable=progress_var, maximum=len(selected_counties), length=400)
     progress_bar.pack(pady=20, padx=20)
+    
+    progress_label = tk.Label(progress_window, text="Starting processing...")
+    progress_label.pack(pady=10)
     
     progress_queue = queue.Queue()
     
     def process_queue():
         try:
-            value = progress_queue.get_nowait()
+            value, message = progress_queue.get_nowait()
             if value is None:
                 progress_window.quit()
             else:
-                update_progress_bar(progress_bar, progress_var, value)
+                update_progress_bar(progress_bar, progress_var, value, progress_label, message)
             progress_window.after(100, process_queue)
         except queue.Empty:
             progress_window.after(100, process_queue)
     
     process_queue()
     
+    output_filename = f"{form_data['output path']}/{form_data['output filename']}.csv"
+    save_path = form_data['output path']
+    
     for county in selected_counties:
         if county in urls:
-            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue)).start()
+            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path)).start()
+import json
 
 def draw_form_fields():
     global entries
@@ -1991,14 +2003,15 @@ def draw_form_fields():
         ("Case Number", "case_number_entry"),
         ("Unit Number", "unit_number_entry"),
         ("Country", "country_entry"),
-        ("Message", "message_entry")
+        ("Message", "message_entry"),
+        ("Output Filename", "output_filename_entry")
     ]):
-        label = ttk.Label(root, text=field)
+        label = ttk.Label(form_frame, text=field, font=("Helvetica", 10, "bold"), background="#808080") 
         canvas.create_window(x_position, y_position, window=label, anchor="w")
         if field == "Message":
-            entry = tk.Text(root, height=5, width=50)
+            entry = tk.Text(form_frame, height=5, width=50)
         else:
-            entry = ttk.Entry(root)
+            entry = ttk.Entry(form_frame)
         canvas.create_window(x_position + 200, y_position, window=entry, anchor="w")
         entries[var_name] = entry
 
@@ -2008,7 +2021,7 @@ def draw_form_fields():
         else:
             x_position += 400
 
-    global date_entry, name_entry, first_name_entry, last_name_entry, phone_entry, email_entry, address_entry, city_entry, state_entry, zip_entry, company_entry, case_entry, time_entry, person_represented_entry, case_number_entry, unit_number_entry, country_entry, message_entry
+    global date_entry, name_entry, first_name_entry, last_name_entry, phone_entry, email_entry, address_entry, city_entry, state_entry, zip_entry, company_entry, case_entry, time_entry, person_represented_entry, case_number_entry, unit_number_entry, country_entry, message_entry, output_filename_entry
     date_entry = entries["date_entry"]
     name_entry = entries["name_entry"]
     first_name_entry = entries["first_name_entry"]
@@ -2027,15 +2040,142 @@ def draw_form_fields():
     unit_number_entry = entries["unit_number_entry"]
     country_entry = entries["country_entry"]
     message_entry = entries["message_entry"]
+    output_filename_entry = entries["output_filename_entry"]
 
-    # Create checkboxes for selecting counties at the bottom in horizontal form
-    global county_vars
-    county_vars = {}
+    def select_directory_dialog():
+        directory_path = filedialog.askdirectory()
+        if directory_path:
+            entries["output_path_entry"] = directory_path
+
+    def save_template():
+        template_data = {var_name: entry.get("1.0", tk.END).strip() if isinstance(entry, tk.Text) else entry.get() for var_name, entry in entries.items()}
+        save_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+        if save_path:
+            with open(save_path, 'w') as json_file:
+                json.dump(template_data, json_file, indent=4)
+            messagebox.showinfo("Success", "Template saved successfully.")
+
+    directory_button = ttk.Button(form_frame, text="Select Directory", command=select_directory_dialog)
+    canvas.create_window(300, y_position + 50, window=directory_button, anchor="w")
+
+    save_template_button = ttk.Button(form_frame, text="Save Template", command=save_template)
+    canvas.create_window(500, y_position + 50, window=save_template_button, anchor="w")
+
+    submit_button = ttk.Button(form_frame, text="Submit", command=submit_form)
+    canvas.create_window(300, y_position + 100, window=submit_button, anchor="w")
+
+def open_form_window():
+    global root, canvas, form_frame, json_frame
+    root = tk.Toplevel()
+    root.title("Form Submission Progress")
+
+    # Create a notebook for tabs
+    notebook = ttk.Notebook(root)
+    notebook.pack(fill="both", expand=True)
+
+    # Create a frame for the form
+    form_frame = ttk.Frame(notebook)
+    notebook.add(form_frame, text="Manual Form")
+
+    # Create a frame for JSON file selection
+    json_frame = ttk.Frame(notebook)
+    notebook.add(json_frame, text="Upload JSON")
+
+    # Create a canvas for the form
+    global canvas
+    canvas = tk.Canvas(form_frame, width=1000, height=1000, bg="#808080")
+    canvas.pack(fill="both", expand=True)
+
+    # Create the gradient background
+    create_gradient(canvas, 1000, 1000)
+    canvas.bind("<Configure>", resize_canvas)
+
+    draw_form_fields()
+
+    # Create the gradient background for JSON frame
+    json_canvas = tk.Canvas(json_frame, width=1000, height=1000, bg="#808080")
+    json_canvas.pack(fill="both", expand=True)
+    create_gradient(json_canvas, 1000, 1000)
+    json_canvas.bind("<Configure>", resize_canvas)
+
+    # Add JSON file selection components
+    json_label = ttk.Label(json_canvas, text="Select JSON file to pre-fill the form:", font=("Helvetica", 10, "bold"), background="#808080")
+    json_canvas.create_window(500, 100, window=json_label)
+    json_button = ttk.Button(json_canvas, text="Browse", command=load_json_file)
+    json_canvas.create_window(500, 150, window=json_button)
+
+def load_json_file():
+    file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+    if file_path:
+        with open(file_path, 'r') as file:
+            try:
+                data = json.load(file)
+                fill_form_with_json(data)
+            except json.JSONDecodeError:
+                messagebox.showerror("Error", "Invalid JSON file.")
+
+def fill_form_with_json(data):
+    try:
+        date_entry.insert(0, data["date"])
+        name_entry.insert(0, data["name"])
+        first_name_entry.insert(0, data["first name"])
+        last_name_entry.insert(0, data["last name"])
+        phone_entry.insert(0, data["phone"])
+        email_entry.insert(0, data["email"])
+        address_entry.insert(0, data["address"])
+        city_entry.insert(0, data["city"])
+        state_entry.insert(0, data["state"])
+        zip_entry.insert(0, data["zip"])
+        company_entry.insert(0, data["company"])
+        case_entry.insert(0, data["case"])
+        time_entry.insert(0, data["time"])
+        person_represented_entry.insert(0, data["person represented"])
+        case_number_entry.insert(0, data["case number"])
+        unit_number_entry.insert(0, data["unit number"])
+        country_entry.insert(0, data["country"])
+        message_entry.insert("1.0", data["message"])
+    except KeyError as e:
+        messagebox.showerror("Error", f"Missing key in JSON file: {e}")
+
+def select_counties():
+    selected_counties = [county for county, var in county_vars.items() if var.get()]
+    if not selected_counties:
+        messagebox.showerror("Error", "Please select at least one county.")
+        return
+    county_selection_window.destroy()
+    open_form_window()
+
+def draw_county_selection():
+    global county_vars, county_selection_window
+    county_selection_window = tk.Tk()
+    county_selection_window.title("Select Counties")
+
+    canvas = tk.Canvas(county_selection_window, width=1000, height=500)
+    canvas.pack(fill="both", expand=True)
+
+    # Create the gradient background
+    create_gradient(canvas, 1000, 500)
+    canvas.bind("<Configure>", resize_canvas)
+
     x_position = 50
-    y_position += -10  # Adjusted y_position to avoid collision with other fields
+    y_position = 50
+    county_vars = {}
+
+    # Add Select All checkbox
+    select_all_var = tk.BooleanVar()
+    select_all_checkbox = ttk.Checkbutton(county_selection_window, text="Select All", variable=select_all_var, style="County.TCheckbutton")
+    canvas.create_window(x_position, y_position, window=select_all_checkbox, anchor="w")
+    y_position += 30
+
+    def toggle_select_all():
+        for var in county_vars.values():
+            var.set(select_all_var.get())
+
+    select_all_var.trace_add("write", lambda *args: toggle_select_all())
+
     for county in urls.keys():
         var = tk.BooleanVar()
-        checkbox = ttk.Checkbutton(root, text=county, variable=var)
+        checkbox = ttk.Checkbutton(county_selection_window, text=county, variable=var, style="County.TCheckbutton")
         canvas.create_window(x_position, y_position, window=checkbox, anchor="w")
         county_vars[county] = var
         x_position += 200
@@ -2043,8 +2183,22 @@ def draw_form_fields():
             x_position = 50
             y_position += 30
 
-    submit_button = ttk.Button(root, text="Submit", command=submit_form)
-    canvas.create_window(300, y_position + 50, window=submit_button, anchor="w")
+    def on_next():
+        selected_counties = [county for county, var in county_vars.items() if var.get()]
+        if not selected_counties:
+            messagebox.showerror("Error", "Please select at least one county.")
+            return
+        county_selection_window.withdraw()  # Hide the county selection window
+        open_form_window()
+
+    next_button = ttk.Button(county_selection_window, text="Next", command=on_next)
+    canvas.create_window(450, y_position + 50, window=next_button, anchor="w")
+
+    # Style for checkbuttons
+    style = ttk.Style()
+    style.configure("County.TCheckbutton", font=("Helvetica", 10, "bold"), background="#808080")
+
+    county_selection_window.mainloop()
 
 if __name__ == "__main__":
     results = []
@@ -2095,18 +2249,4 @@ if __name__ == "__main__":
     ]
 }
 
-    # Create the main window
-    root = tk.Tk()
-    root.title("Form Submission Progress")
-
-    # Create a canvas
-    canvas = tk.Canvas(root, width=1000, height=1000)
-    canvas.pack(fill="both", expand=True)
-
-    # Create the gradient background
-    create_gradient(canvas, 1000, 1000)
-    canvas.bind("<Configure>", resize_canvas)
-
-    draw_form_fields()
-
-    root.mainloop()
+    draw_county_selection()
