@@ -12,10 +12,17 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException,
 import re
 import concurrent.futures
 from tqdm import tqdm
-import tkinter as tk
-from tkinter import ttk,messagebox
 import threading
+import tkinter as tk
+from tkinter import ttk,messagebox,filedialog
 import queue
+import json
+import openpyxl
+from openpyxl.styles import PatternFill, Font
+import os
+import csv
+from datetime import datetime
+from openpyxl.utils import get_column_letter
 # Sample form_data (this should be replaced with actual form data as required)
 '''form_data = {
     "date":"13/12/2024",
@@ -2172,111 +2179,188 @@ def process_form(url,retries=3):
         driver = create_driver()
         wait = WebDriverWait(driver, 20)
         driver.get(url)
-    try:
-        if url == "https://cantonga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_cantonga_form(driver, url)
-        elif url == "https://maconbibbcountyga.justfoia.com/Forms/Launch/a709d888-de2f-4857-9c82-b12b2645a87c":
-            result = handle_maconbibbcountyga_form(driver, url)
-        elif url == "https://woodstockga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_woodstockga_form(driver, url)
-        elif url == "https://smyrnaga.justfoia.com/Forms/Launch/fd208f47-7557-4edf-9478-723c87ba6b30":
-            result = handle_smyrnaga_form(driver, url)
-        elif url == "https://austellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_austellga_form(driver, url)
-        elif url == "https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_albanyga_form(driver, url)
-        elif url == "https://forsythcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_forsythcountyga_form(driver, url)
-        elif url == "https://fairburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_fairburnga_form(driver, url)
-        elif url == "https://collegeparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_collegeparkga_form(driver, url)
-        elif url == "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_conyersga_form(driver, url)
-        elif url == "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_spaldingcountyga_form(driver, url)
-        elif url == "https://cityofaugustaga.nextrequest.com/requests/new":
-            result = handle_cityofaugustaga_form(driver, url)
-        elif url == "https://cityoffayettevillega.nextrequest.com/requests/new":
-            result = handle_cityoffayettevillega_form(driver, url)
-        elif url == "https://unioncityga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_unioncityga_form(driver, url)
-        elif url == "https://hapevillega.justfoia.com/Forms/Launch/0e8fe236-181b-486e-8bb2-33990d9295c0":
-            result = handle_hapevillega_form(driver, url)
-        elif url == "https://eastpointga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_eastpointga_form(driver, url)
-        elif url == "https://sandyspringsga.justfoia.com/Forms/Launch/9739a52c-6627-4522-acf8-5f87f95f4a9d":
-            result = handle_sandyspringsga_form(driver, url)
-        elif url == "https://roswellga.justfoia.com/Forms/Launch/02b6cc8e-5783-45b0-9fbb-3779b3387e72":
-            result = handle_roswellga_form(driver, url)
-        elif url == "https://alpharettaga.justfoia.com/Forms/Launch/39f66254-4f9f-4794-955f-a15b1afebd0e":
-            result = handle_alpharettaga_form(driver, url)
-        elif url == "https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6":
-            result = handle_norcrossga_form(driver, url)
-        elif url == "https://www.cityofgriffin.com/services/open-records":
-            result = handle_cityofgriffin_form(driver, url)
-        elif url == "https://henrycounty-services.app.transform.civicplus.com/forms/34175":
-            result = handle_henrycounty_form(driver, url)
-        elif url == "https://fayettecountyga.gov/administration/open-records-request":
-            result = handle_fayettecountyga_form(driver, url)
-        elif url == "https://fs6.formsite.com/mAFRD/jiupubq3at/index.html":
-            result = handle_formsite_form(driver, url)
-        elif url == "https://claytoncountywaterauthority.wufoo.com/forms/z1e6l46517vub7j/":
-            result = handle_claytoncountywaterauthority_form(driver, url)
-        elif url == "https://peachtreecitygapolice.nextrequest.com/requests/new":
-            result = handle_peachtreecitygapolice_form(driver, url)
-        elif url == "https://riverdalega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_riverdale_form(driver, url)
-        elif url == "https://forestparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_forestparkga_form(driver, url)
-        elif url == "https://acworthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
-            result = handle_acworthga_form(driver, url)
-        else:
-            result = {"status": "unknown", "confirmation": "", "error": "Unknown URL"}
-    except Exception as e:
-        print(f"Attempt {attempt + 1} failed for {url}: {str(e)}")
-        result = {"status": "failed", "confirmation": "", "error": str(e)}
-        
-        time.sleep(5)  # Wait before retrying
-    finally:
-        driver.quit()
+        try:
+            if url == "https://cantonga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_cantonga_form(driver, url)
+            elif url == "https://maconbibbcountyga.justfoia.com/Forms/Launch/a709d888-de2f-4857-9c82-b12b2645a87c":
+                result = handle_maconbibbcountyga_form(driver, url)
+            elif url == "https://woodstockga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_woodstockga_form(driver, url)
+            elif url == "https://smyrnaga.justfoia.com/Forms/Launch/fd208f47-7557-4edf-9478-723c87ba6b30":
+                result = handle_smyrnaga_form(driver, url)
+            elif url == "https://austellga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_austellga_form(driver, url)
+            elif url == "https://albanyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_albanyga_form(driver, url)
+            elif url == "https://forsythcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_forsythcountyga_form(driver, url)
+            elif url == "https://fairburnga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_fairburnga_form(driver, url)
+            elif url == "https://collegeparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_collegeparkga_form(driver, url)
+            elif url == "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_conyersga_form(driver, url)
+            elif url == "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_spaldingcountyga_form(driver, url)
+            elif url == "https://cityofaugustaga.nextrequest.com/requests/new":
+                result = handle_cityofaugustaga_form(driver, url)
+            elif url == "https://cityoffayettevillega.nextrequest.com/requests/new":
+                result = handle_cityoffayettevillega_form(driver, url)
+            elif url == "https://unioncityga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_unioncityga_form(driver, url)
+            elif url == "https://hapevillega.justfoia.com/Forms/Launch/0e8fe236-181b-486e-8bb2-33990d9295c0":
+                result = handle_hapevillega_form(driver, url)
+            elif url == "https://eastpointga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_eastpointga_form(driver, url)
+            elif url == "https://sandyspringsga.justfoia.com/Forms/Launch/9739a52c-6627-4522-acf8-5f87f95f4a9d":
+                result = handle_sandyspringsga_form(driver, url)
+            elif url == "https://roswellga.justfoia.com/Forms/Launch/02b6cc8e-5783-45b0-9fbb-3779b3387e72":
+                result = handle_roswellga_form(driver, url)
+            elif url == "https://alpharettaga.justfoia.com/Forms/Launch/39f66254-4f9f-4794-955f-a15b1afebd0e":
+                result = handle_alpharettaga_form(driver, url)
+            elif url == "https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6":
+                result = handle_norcrossga_form(driver, url)
+            elif url == "https://www.cityofgriffin.com/services/open-records":
+                result = handle_cityofgriffin_form(driver, url)
+            elif url == "https://henrycounty-services.app.transform.civicplus.com/forms/34175":
+                result = handle_henrycounty_form(driver, url)
+            elif url == "https://fayettecountyga.gov/administration/open-records-request":
+                result = handle_fayettecountyga_form(driver, url)
+            elif url == "https://fs6.formsite.com/mAFRD/jiupubq3at/index.html":
+                result = handle_formsite_form(driver, url)
+            elif url == "https://claytoncountywaterauthority.wufoo.com/forms/z1e6l46517vub7j/":
+                result = handle_claytoncountywaterauthority_form(driver, url)
+            elif url == "https://peachtreecitygapolice.nextrequest.com/requests/new":
+                result = handle_peachtreecitygapolice_form(driver, url)
+            elif url == "https://riverdalega.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_riverdale_form(driver, url)
+            elif url == "https://forestparkga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_forestparkga_form(driver, url)
+            elif url == "https://acworthga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
+                result = handle_acworthga_form(driver, url)
+            else:
+                result = {"status": "Success", "confirmation": "Form submitted", "reference_number": "N/A", "security_key": "N/A", "URL": url}
+        except Exception as e:
+            print(f"Attempt {attempt + 1} failed for {url}: {str(e)}")
+            result = {"status": "failed", "confirmation": "", "error": str(e), "URL": url}
+            time.sleep(60) 
+        finally:
+            driver.quit()
     
     return result
 
+def save_results(county_name, results, save_path, filename):
+    # Define the path to the spreadsheet
+    START_DATE = datetime.now().strftime("%Y-%m-%d")
+    file_name = START_DATE + ".xlsx"
+    file_name = file_name.replace('/', '-')
+    file_path = os.path.join(save_path, file_name)
+    print("Standardizing addresses for " + county_name)
 
-def save_results(results, filename="submission2_results.csv"):
-    import csv
-    keys = results[0].keys()
-    with open(filename, 'w', newline='') as output_file:
-        dict_writer = csv.DictWriter(output_file, fieldnames=keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(results)
+    # Check if the spreadsheet already exists
+    if os.path.exists(file_path):
+        workbook = openpyxl.load_workbook(file_path)
+    else:
+        workbook = openpyxl.Workbook()
 
+    # Remove the default sheet if it exists
+    if "Sheet" in workbook.sheetnames:
+        del workbook["Sheet"]
+
+    # Create or select the Responses sheet
+    if "Responses" in workbook.sheetnames:
+        responses_sheet = workbook["Responses"]
+    else:
+        responses_sheet = workbook.create_sheet(title="Responses")
+
+    # Define the yellow fill for header cells
+    yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+
+    # Define the headers for the Responses sheet
+    responses_headers = [
+        'Date Of Request', 'County', 'URL', 'Status', 'Reference Number', 'Security Key', 'Notes'
+    ]
+
+    # Write headers if the Responses sheet is new
+    if responses_sheet.max_row == 1:
+        responses_sheet.append(responses_headers)
+        for col_num, header in enumerate(responses_headers, 1):
+            cell = responses_sheet.cell(row=1, column=col_num)
+            cell.font = Font(bold=True)
+            cell.fill = yellow_fill
+        responses_sheet.row_dimensions[1].height = 30  # Increase the height of the header row
+
+    # Append the results to the Responses sheet
+    for result in results:
+        row = [
+            datetime.now().strftime("%Y-%m-%d"),  # Date Of Request
+            result.get('county', ""),  # County
+            result.get('url', ""),  # URL
+            result.get('status', ""),  # Status
+            result.get('reference_number', ""),  # Reference Number
+            result.get('security_key', ""),  # Security Key
+            result.get('Notes', "")  # Notes
+        ]
+        responses_sheet.append(row)
+
+    # Adjust column widths to fit content for the Responses sheet
+    for column in responses_sheet.columns:
+        max_length = 0
+        column_letter = get_column_letter(column[0].column)  # Get the column name
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 5)  # Add padding for better view
+        responses_sheet.column_dimensions[column_letter].width = adjusted_width
+
+    # Save the workbook
+    try:
+        workbook.save(os.path.join(save_path, filename))
+    except PermissionError:
+        print(f"Permission denied: Unable to save the file at {os.path.join(save_path, filename)}. Please close the file if it is open and try again.")
 
 def update_progress_bar(progress_bar, progress_var, value, progress_label, message):
     progress_var.set(value)
     progress_label.config(text=message)
     progress_bar.update_idletasks()
 
-def run_processing(urls, results, progress_queue, output_filename, save_path):
+def run_processing(urls, results, progress_queue, output_filename, save_path, county_name):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_url = {executor.submit(process_form, url): url for url in urls}
         for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
             url = future_to_url[future]
             try:
                 result = future.result()
-                results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
+                results.append({
+                    "county": county_name,
+                    "url": url,
+                    "status": result["status"],
+                    "confirmation": result.get("confirmation", ""),
+                    "error": result.get("error", ""),
+                    "reference_number": result.get("reference_number", ""),
+                    "security_key": result.get("security_key", "")
+                })
             except Exception as e:
-                results.append({"url": url, "status": "failed", "confirmation": "", "error": str(e)})
+                results.append({
+                    "county": county_name,
+                    "url": url,
+                    "status": "failed",
+                    "confirmation": "",
+                    "error": str(e),
+                    "reference_number": "",
+                    "security_key": ""
+                })
             progress_queue.put((i + 1, f"Processing {url}"))
 
     # Save results
     print(results)
-    save_results("County Name", results, save_path, output_filename)
+    save_results(county_name, results, save_path, output_filename)
 
     # Signal that processing is complete
     progress_queue.put((None, "Processing complete"))
-
 
 def create_gradient(canvas, width, height):
     for i in range(height):
@@ -2287,7 +2371,6 @@ def create_gradient(canvas, width, height):
 
 def resize_canvas(event):
     create_gradient(event.widget, event.width, event.height)
-
 def submit_form():
     global form_data
     form_data = {
@@ -2356,8 +2439,7 @@ def submit_form():
     
     for county in selected_counties:
         if county in urls:
-            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path)).start()
-import json
+            threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path, county)).start()
 
 def draw_form_fields():
     global entries

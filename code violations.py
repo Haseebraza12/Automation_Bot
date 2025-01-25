@@ -2532,7 +2532,6 @@ def process_form(url, retries=1):
     
     return result
 
-
 def save_results(county_name, results, save_path, filename):
     # Define the path to the spreadsheet
     START_DATE = datetime.now().strftime("%Y-%m-%d")
