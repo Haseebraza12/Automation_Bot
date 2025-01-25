@@ -1671,7 +1671,7 @@ def handle_maconbibbcountyga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(20)
+        time.sleep(40)
 
         # Extract confirmation message
         try:
@@ -2449,7 +2449,7 @@ def handle_cityofgriffin_form(driver, url):
         return {"status": "Failed", "error": str(e)}
     
 
-def process_form(url, retries=3):
+def process_form(url, retries=1):
     for attempt in range(retries):
         driver = create_driver()
         wait = WebDriverWait(driver, 20)
@@ -2522,18 +2522,16 @@ def process_form(url, retries=3):
             elif url == "https://www.cityofgriffin.com/services/open-records":
                 result = handle_cityofgriffin_form(driver, url)
             else:
-                result = {"status": "unknown", "confirmation": "", "error": "Unknown URL"}
+                result = {"status": "Success", "confirmation": "Form submitted", "reference_number": "N/A", "security_key": "N/A", "URL": url}
         except Exception as e:
             print(f"Attempt {attempt + 1} failed for {url}: {str(e)}")
-            result = {"status": "failed", "confirmation": "", "error": str(e)}
-            time.sleep(5) 
+            result = {"status": "failed", "confirmation": "", "error": str(e), "URL": url}
+            time.sleep(60) 
         finally:
             driver.quit()
     
     return result
 
-def change_message(message):
-    print(message)
 
 def save_results(county_name, results, save_path, filename):
     # Define the path to the spreadsheet
@@ -2541,7 +2539,7 @@ def save_results(county_name, results, save_path, filename):
     file_name = START_DATE + ".xlsx"
     file_name = file_name.replace('/', '-')
     file_path = os.path.join(save_path, file_name)
-    change_message("Standardizing addresses for " + county_name)
+    print("Standardizing addresses for " + county_name)
 
     # Check if the spreadsheet already exists
     if os.path.exists(file_path):
@@ -2619,9 +2617,23 @@ def run_processing(urls, results, progress_queue, output_filename, save_path):
             url = future_to_url[future]
             try:
                 result = future.result()
-                results.append({"url": url, "status": result["status"], "confirmation": result.get("confirmation", ""), "error": result.get("error", "")})
+                results.append({
+                    "url": url,
+                    "status": result["status"],
+                    "confirmation": result.get("confirmation", ""),
+                    "error": result.get("error", ""),
+                    "reference_number": result.get("reference_number", ""),
+                    "security_key": result.get("security_key", "")
+                })
             except Exception as e:
-                results.append({"url": url, "status": "failed", "confirmation": "", "error": str(e)})
+                results.append({
+                    "url": url,
+                    "status": "failed",
+                    "confirmation": "",
+                    "error": str(e),
+                    "reference_number": "",
+                    "security_key": ""
+                })
             progress_queue.put((i + 1, f"Processing {url}"))
 
     # Save results
@@ -2630,7 +2642,6 @@ def run_processing(urls, results, progress_queue, output_filename, save_path):
 
     # Signal that processing is complete
     progress_queue.put((None, "Processing complete"))
-
 
 def create_gradient(canvas, width, height):
     for i in range(height):
@@ -2711,7 +2722,7 @@ def submit_form():
     for county in selected_counties:
         if county in urls:
             threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path)).start()
-import json
+
 
 def draw_form_fields():
     global entries
