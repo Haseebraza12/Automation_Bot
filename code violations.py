@@ -2972,7 +2972,7 @@ def draw_county_selection():
         if not selected_counties:
             messagebox.showerror("Error", "Please select at least one county.")
             return
-        county_selection_window.destroy()
+        county_selection_window.withdraw()  # Hide the county selection window
         open_form_window()
 
     next_button = ttk.Button(county_selection_window, text="Next", command=on_next)
@@ -2983,6 +2983,7 @@ def draw_county_selection():
     style.configure("County.TCheckbutton", font=("Helvetica", 10, "bold"), background="#808080")
 
     county_selection_window.mainloop()
+    
 
 if __name__ == "__main__":
     results = []
