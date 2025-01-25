@@ -1223,7 +1223,6 @@ def handle_sandyspringsga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-
 def handle_roswellga_form(driver, url):
     try:
         driver.get(url)
@@ -1252,33 +1251,48 @@ def handle_roswellga_form(driver, url):
         details.clear()
         details.send_keys(form_data["message"])
         print("Filled request details")
-        # Take screenshot before submission
-        driver.save_screenshot("before_submit.png")
 
-         #checkbox
+        # Handle checkbox selection
         checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div[1]/div/div/div/div/div/div/div"
         checkbox2_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[19]/div[1]/div/div/div/div/div/div/div"
         checkbox3_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[21]/div[1]/div/div/div/div/div/div/div"
         checkbox4_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[22]/div[1]/div/div/div/div/div/div/div"
-        for checkbox_xpath in [checkbox1_xpath, checkbox2_xpath,checkbox3_xpath,checkbox4_xpath]:
+        for checkbox_xpath in [checkbox1_xpath, checkbox2_xpath, checkbox3_xpath, checkbox4_xpath]:
             checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
             driver.execute_script("arguments[0].click();", checkbox)
             print(f"Checked {checkbox_xpath}")
-        
+
+        # Take screenshot before submission
+        driver.save_screenshot("before_submit.png")
 
         # Submit form
         submit_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button/div"
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-        time.sleep(5)
-        return {"status": "Success", "confirmation": "Form submitted"}
+
+        # Delay of 30 seconds after form submission
+        time.sleep(30)
+
+        # Extract confirmation message
+        try:
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Request Number:')]").text
+            print(f"Confirmation message: {confirmation_message}")
+            security_key_match = re.search(r"Security Key:\s+(\S+)", confirmation_message)
+            reference_number_match = re.search(r"Request Number:\s+(\S+)", confirmation_message)
+            security_key = security_key_match.group(1) if security_key_match else ""
+            reference_number = reference_number_match.group(1) if reference_number_match else ""
+            if not security_key or not reference_number:
+                print("Confirmation message found but could not extract reference number or security key")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
+        except NoSuchElementException:
+            print("Confirmation message not found")
+            return {"status": "Success", "confirmation": "Form submitted", "reference_number": "", "security_key": ""}
 
     except Exception as e:
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-
 
 def handle_alpharettaga_form(driver, url):
     try:
