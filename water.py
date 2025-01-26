@@ -1806,7 +1806,7 @@ def save_results(results, filename="submission3_results.csv"):
 
 
 
-def process_form(url,retries=3):
+def process_form(url,retries=1):
     for attempt in range(retries):
         driver = create_driver()
         wait = WebDriverWait(driver, 20)
@@ -1995,6 +1995,7 @@ def create_gradient(canvas, width, height):
 
 def resize_canvas(event):
     create_gradient(event.widget, event.width, event.height)
+
 def submit_form():
     global form_data
     form_data = {
@@ -2030,6 +2031,9 @@ def submit_form():
     if not selected_counties:
         messagebox.showerror("Error", "Please select at least one county.")
         return
+    
+    # Withdraw the form window
+    root.withdraw()
     
     # Create a new window for the progress bar
     global progress_window, progress_var, progress_bar, progress_queue, progress_label
