@@ -6,6 +6,7 @@ import threading
 class PasswordDialog(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
+        self.master = master
         self.title("Password Required")
         self.geometry("300x150")
 
@@ -20,6 +21,9 @@ class PasswordDialog(tk.Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+        self.lift()  # Bring the password dialog to the front
+        self.grab_set()  # Make the dialog modal
+
     def check_password(self):
         if self.password_entry.get() == "josh":
             self.destroy()  # Close the dialog if the password is correct
@@ -33,6 +37,7 @@ class PasswordDialog(tk.Toplevel):
 class BotRunnerApp(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.withdraw()  # Hide the main window initially
         self.title("Bot Runner")
         self.geometry("400x300")
         self.password_verified = False
@@ -40,6 +45,7 @@ class BotRunnerApp(tk.Tk):
 
     def initialize_ui(self):
         self.password_verified = True
+        self.deiconify()  # Show the main window after password verification
         # Create a canvas for the gradient background
         self.canvas = tk.Canvas(self, width=400, height=300)
         self.canvas.pack(fill="both", expand=True)
@@ -66,7 +72,7 @@ class BotRunnerApp(tk.Tk):
         self.label.pack(pady=10)
 
         # Create a dropdown menu
-        self.script_options = ["code violations.py", "fire.py", "water.py"]
+        self.script_options = ["Code Violation", "Fire Damage", "Water Damage"]
         self.script_menu = tk.OptionMenu(self.frame, self.script_var, *self.script_options)
         self.script_menu.config(bg='lightgray', font=("Arial", 10))
         self.script_menu.pack(pady=10)
@@ -91,10 +97,19 @@ class BotRunnerApp(tk.Tk):
         self.create_gradient(event.width, event.height)
 
     def run_script(self):
+        script_mapping = {
+            "Code Violation": "code_violations.py",
+            "Fire Damage": "fire.py",
+            "Water Damage": "water.py"
+        }
         selected_script = self.script_var.get()
         if selected_script:
-            # Run the script in a separate thread
-            threading.Thread(target=self._run_script_thread, args=(selected_script,)).start()
+            script_name = script_mapping.get(selected_script)
+            if script_name:
+                # Run the script in a separate thread
+                threading.Thread(target=self._run_script_thread, args=(script_name,)).start()
+            else:
+                messagebox.showerror("Error", "Invalid script selected.")
         else:
             messagebox.showwarning("Warning", "Please select a script to run.")
 
