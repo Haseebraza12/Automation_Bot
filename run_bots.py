@@ -98,7 +98,7 @@ class BotRunnerApp(tk.Tk):
 
     def run_script(self):
         script_mapping = {
-            "Code Violation": "code_violations.py",
+            "Code Violation": "code violations.py",
             "Fire Damage": "fire.py",
             "Water Damage": "water.py"
         }
