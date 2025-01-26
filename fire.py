@@ -2444,7 +2444,6 @@ def submit_form():
     for county in selected_counties:
         if county in urls:
             threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path, county)).start()
-
 def draw_form_fields():
     global entries
     entries = {}
@@ -2511,6 +2510,7 @@ def draw_form_fields():
         directory_path = filedialog.askdirectory()
         if directory_path:
             entries["output_path_entry"] = directory_path
+        root.lift()
 
     def save_template():
         template_data = {var_name: entry.get("1.0", tk.END).strip() if isinstance(entry, tk.Text) else entry.get() for var_name, entry in entries.items()}
@@ -2519,6 +2519,7 @@ def draw_form_fields():
             with open(save_path, 'w') as json_file:
                 json.dump(template_data, json_file, indent=4)
             messagebox.showinfo("Success", "Template saved successfully.")
+        root.lift()
 
     directory_button = ttk.Button(form_frame, text="Select Directory", command=select_directory_dialog)
     canvas.create_window(300, y_position + 50, window=directory_button, anchor="w")
@@ -2578,6 +2579,7 @@ def load_json_file():
                 fill_form_with_json(data)
             except json.JSONDecodeError:
                 messagebox.showerror("Error", "Invalid JSON file.")
+        root.lift()
 
 def fill_form_with_json(data):
     try:
@@ -2601,7 +2603,8 @@ def fill_form_with_json(data):
         message_entry.insert("1.0", data["message"])
     except KeyError as e:
         messagebox.showerror("Error", f"Missing key in JSON file: {e}")
-
+    root.lift()
+    
 def select_counties():
     selected_counties = [county for county, var in county_vars.items() if var.get()]
     if not selected_counties:
