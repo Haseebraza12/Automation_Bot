@@ -2538,7 +2538,7 @@ def save_results(county_name, results, save_path, filename):
     file_name = START_DATE + ".xlsx"
     file_name = file_name.replace('/', '-')
     file_path = os.path.join(save_path, file_name)
-    print("Standardizing addresses for " + county_name)
+    print(county_name)
 
     # Check if the spreadsheet already exists
     if os.path.exists(file_path):

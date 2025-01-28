@@ -2162,15 +2162,7 @@ def handle_acworthga_form(driver, url):
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
     
-def save_results(results, filename="submission2_results.csv"):
-    try:
-        with open(filename, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=['url', 'status', 'confirmation', 'error'])
-            writer.writeheader()
-            writer.writerows(results)
-        print(f"Results saved to {filename}")
-    except Exception as e:
-        print(f"Error saving results: {e}")
+
 
 
 
@@ -2255,7 +2247,7 @@ def save_results(county_name, results, save_path, filename):
     file_name = START_DATE + ".xlsx"
     file_name = file_name.replace('/', '-')
     file_path = os.path.join(save_path, file_name)
-    print("Standardizing addresses for " + county_name)
+    print(county_name)
 
     # Check if the spreadsheet already exists
     if os.path.exists(file_path):
