@@ -2611,6 +2611,7 @@ def create_gradient(canvas, width, height):
         canvas.create_rectangle(0, 0, width, height, fill='grey', outline='grey')
         color = f'#{grey_value:02x}{grey_value:02x}{grey_value:02x}'  # Define the color as a shade of grey
         canvas.create_line(0, i, width, i, fill=color)
+        
 def run_processing(urls, results, progress_queue, output_filename, save_path, county_name):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_url = {executor.submit(process_form, url): url for url in urls}
@@ -2727,6 +2728,7 @@ def submit_form():
     for county in selected_counties:
         if county in urls:
             threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path, county)).start()
+
 def draw_form_fields():
     global entries
     entries = {}
@@ -2795,14 +2797,35 @@ def draw_form_fields():
             entries["output_path_entry"] = directory_path
         root.lift()
 
+
     def save_template():
-        template_data = {var_name: entry.get("1.0", tk.END).strip() if isinstance(entry, tk.Text) else entry.get() for var_name, entry in entries.items()}
+        template_data = {
+            "date": date_entry.get(),
+            "name": name_entry.get(),
+            "first name": first_name_entry.get(),
+            "last name": last_name_entry.get(),
+            "phone": phone_entry.get(),
+            "email": email_entry.get(),
+            "address": address_entry.get(),
+            "city": city_entry.get(),
+            "state": state_entry.get(),
+            "zip": zip_entry.get(),
+            "company": company_entry.get(),
+            "case": case_entry.get(),
+            "time": time_entry.get(),
+            "person represented": person_represented_entry.get(),
+            "case number": case_number_entry.get(),
+            "unit number": unit_number_entry.get(),
+            "country": country_entry.get(),
+            "message": message_entry.get("1.0", tk.END).strip()
+        }
         save_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
         if save_path:
             with open(save_path, 'w') as json_file:
                 json.dump(template_data, json_file, indent=4)
             messagebox.showinfo("Success", "Template saved successfully.")
         root.lift()
+
 
     directory_button = ttk.Button(form_frame, text="Select Directory", command=select_directory_dialog)
     canvas.create_window(300, y_position + 50, window=directory_button, anchor="w")
