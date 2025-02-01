@@ -1859,14 +1859,13 @@ def process_form(url,retries=1):
     
     return result
 
-
 def save_results(county_name, results, save_path, filename):
     # Define the path to the spreadsheet
     START_DATE = datetime.now().strftime("%Y-%m-%d")
     file_name = START_DATE + ".xlsx"
-    file_name = file_name.replace('/', '-')
+    file_name = file_name.replace('/', '-')  # Ensure proper filename format
     file_path = os.path.join(save_path, file_name)
-    print( county_name)
+    print(f"Saving results for {county_name} to {file_path}")
 
     # Check if the spreadsheet already exists
     if os.path.exists(file_path):
@@ -1924,15 +1923,20 @@ def save_results(county_name, results, save_path, filename):
                     max_length = len(cell.value)
             except:
                 pass
-        adjusted_width = (max_length + 5)  # Add padding for better view
+        adjusted_width = max_length + 5  # Add padding for better view
         responses_sheet.column_dimensions[column_letter].width = adjusted_width
 
     # Save the workbook
     try:
-        workbook.save(os.path.join(save_path, filename))
+        # Ensure file is saved with appropriate encoding
+        safe_file_path = os.path.join(save_path, filename)
+        workbook.save(safe_file_path)
+        print(f"Results successfully saved to {safe_file_path}")
     except PermissionError:
-        print(f"Permission denied: Unable to save the file at {os.path.join(save_path, filename)}. Please close the file if it is open and try again.")
-
+        print(f"Permission denied: Unable to save the file at {safe_file_path}. Please close the file if it is open and try again.")
+    except Exception as e:
+        print(f"An error occurred while saving the file: {str(e)}")
+        
 def update_progress_bar(progress_bar, progress_var, value, progress_label, message):
     progress_var.set(value)
     progress_label.config(text=message)

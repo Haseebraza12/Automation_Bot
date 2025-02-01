@@ -94,7 +94,6 @@ def fill_field(driver, wait, xpath, value):
     except Exception as e:
         print(f"Error filling field at {xpath}: {str(e)}")
 
-
 def handle_tucker_form(driver, url):
     try:
         driver.get(url)
@@ -104,27 +103,26 @@ def handle_tucker_form(driver, url):
         time.sleep(7)
 
         # Handle dropdown selection
-        dropdown0_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div/div[1]/select"
-        dropdown0 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown0_xpath))))
-        available_options = [o.text for o in dropdown0.options]
-        print("Available options in dropdown:", available_options)
-        dropdown0.select_by_visible_text("Phone")  # Adjust text if necessary
-        print("Selected 'Phone' from dropdown")
+        #dropdown0_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div/div[1]/select"
+        #dropdown0 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown0_xpath))))
+       # available_options = [o.text for o in dropdown0.options]
+       # print("Available options in dropdown:", available_options)
+       # dropdown0.select_by_visible_text("Phone")  # Adjust text if necessary
+        #print("Selected 'Phone' from dropdown")
 
         # Fill all fields
         fields_to_fill = {
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div/div[1]/input": form_data["name"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div/div[1]/input": form_data["phone"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div/div[1]/input": form_data["address"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div/div[1]/input": form_data["city"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div/div[1]/input": form_data["state"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div/div[1]/input": form_data["zip"]
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div/div[1]/input": form_data["address"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div/div[1]/input": form_data["city"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div/div[1]/input": form_data["state"],
+            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div/div[1]/input": form_data["zip"]
         }
 
         for xpath, value in fields_to_fill.items():
             fill_field(driver, wait, xpath, value)
         
-        dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div/div[1]/select"
+        dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div/div[1]/select"
         dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
         available_options = [o.text for o in dropdown1.options]
         print("Available options in dropdown:", available_options)
@@ -132,15 +130,15 @@ def handle_tucker_form(driver, url):
         print("Selected 'Other inquiries' from dropdown")
 
         # Fill request details
-        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[12]/div/div[1]/textarea"
+        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div/div[1]/textarea"
         details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
         details.clear()
         details.send_keys(form_data["message"])
         print("Filled request details")
 
         # Handle checkboxes
-        checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[15]/div/div[1]/div/div/div/div/div/div/div"
-        checkbox2_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[16]/div/div[1]/div/div/div/div/div/div/div"
+        checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[13]/div/div[1]/div/div/div/div/div/div/div"
+        checkbox2_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[14]/div/div[1]/div/div/div/div/div/div/div"
         for checkbox_xpath in [checkbox1_xpath, checkbox2_xpath]:
             checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
             driver.execute_script("arguments[0].click();", checkbox)
@@ -156,8 +154,9 @@ def handle_tucker_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(40)
+        time.sleep(60)
 
+  
         # Extract confirmation message
         try:
             confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
@@ -2536,9 +2535,9 @@ def save_results(county_name, results, save_path, filename):
     # Define the path to the spreadsheet
     START_DATE = datetime.now().strftime("%Y-%m-%d")
     file_name = START_DATE + ".xlsx"
-    file_name = file_name.replace('/', '-')
+    file_name = file_name.replace('/', '-')  # Ensure proper filename format
     file_path = os.path.join(save_path, file_name)
-    print(county_name)
+    print(f"Saving results for {county_name} to {file_path}")
 
     # Check if the spreadsheet already exists
     if os.path.exists(file_path):
@@ -2596,15 +2595,20 @@ def save_results(county_name, results, save_path, filename):
                     max_length = len(cell.value)
             except:
                 pass
-        adjusted_width = (max_length + 5)  # Add padding for better view
+        adjusted_width = max_length + 5  # Add padding for better view
         responses_sheet.column_dimensions[column_letter].width = adjusted_width
 
     # Save the workbook
     try:
-        workbook.save(os.path.join(save_path, filename))
+        # Ensure file is saved with appropriate encoding
+        safe_file_path = os.path.join(save_path, filename)
+        workbook.save(safe_file_path)
+        print(f"Results successfully saved to {safe_file_path}")
     except PermissionError:
-        print(f"Permission denied: Unable to save the file at {os.path.join(save_path, filename)}. Please close the file if it is open and try again.")
-
+        print(f"Permission denied: Unable to save the file at {safe_file_path}. Please close the file if it is open and try again.")
+    except Exception as e:
+        print(f"An error occurred while saving the file: {str(e)}")
+        
 def create_gradient(canvas, width, height):
     for i in range(height):
         grey_value = int(200 - (i * 100 / height))
