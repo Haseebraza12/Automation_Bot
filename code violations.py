@@ -2649,10 +2649,9 @@ def run_processing(urls, results, progress_queue, output_filename, save_path, co
     
 def resize_canvas(event):
     create_gradient(event.widget, event.width, event.height)
-
-def update_progress_bar(progress_bar, progress_var, value, progress_label, message):
+def update_progress_bar(progress_bar, progress_var, value, progress_label, county):
     progress_var.set(value)
-    progress_label.config(text=message)
+    progress_label.config(text=f"Processing {county}...")
     progress_bar.update_idletasks()
 
 
@@ -2711,11 +2710,11 @@ def submit_form():
     
     def process_queue():
         try:
-            value, message = progress_queue.get_nowait()
+            value, county = progress_queue.get_nowait()
             if value is None:
                 progress_window.quit()
             else:
-                update_progress_bar(progress_bar, progress_var, value, progress_label, message)
+                update_progress_bar(progress_bar, progress_var, value, progress_label, county)
             progress_window.after(100, process_queue)
         except queue.Empty:
             progress_window.after(100, process_queue)
@@ -2728,7 +2727,7 @@ def submit_form():
     for county in selected_counties:
         if county in urls:
             threading.Thread(target=run_processing, args=(urls[county], results, progress_queue, output_filename, save_path, county)).start()
-
+            
 def draw_form_fields():
     global entries
     entries = {}
