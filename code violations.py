@@ -2703,7 +2703,7 @@ def submit_form():
     progress_bar = ttk.Progressbar(progress_window, variable=progress_var, maximum=len(selected_counties), length=400)
     progress_bar.pack(pady=20, padx=20)
     
-    progress_label = tk.Label(progress_window, text="Starting processing...")
+    progress_label = tk.Label(progress_window, text="Started processing...")
     progress_label.pack(pady=10)
     
     progress_queue = queue.Queue()
