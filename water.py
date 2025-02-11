@@ -1936,11 +1936,12 @@ def save_results(county_name, results, save_path, filename):
         print(f"Permission denied: Unable to save the file at {safe_file_path}. Please close the file if it is open and try again.")
     except Exception as e:
         print(f"An error occurred while saving the file: {str(e)}")
-        
-def update_progress_bar(progress_bar, progress_var, value, progress_label, message):
+
+def update_progress_bar(progress_bar, progress_var, value, progress_label, county):
     progress_var.set(value)
-    progress_label.config(text=message)
+    progress_label.config(text=f"Processing {county}...")
     progress_bar.update_idletasks()
+
 
 def run_processing(urls, results, progress_queue, output_filename, save_path, county_name):
     with concurrent.futures.ThreadPoolExecutor() as executor:

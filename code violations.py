@@ -93,7 +93,6 @@ def fill_field(driver, wait, xpath, value):
         print(f"Filled field at {xpath} with value: {value}")
     except Exception as e:
         print(f"Error filling field at {xpath}: {str(e)}")
-
 def handle_tucker_form(driver, url):
     try:
         driver.get(url)
@@ -112,17 +111,19 @@ def handle_tucker_form(driver, url):
 
         # Fill all fields
         fields_to_fill = {
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div/div[1]/input": form_data["name"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div/div[1]/input": form_data["address"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div/div[1]/input": form_data["city"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div/div[1]/input": form_data["state"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div/div[1]/input": form_data["zip"]
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[3]/div/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[4]/div/div[1]/input": form_data["phone"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[5]/div/div[1]/input": form_data["email"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[6]/div/div[1]/input": form_data["address"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[7]/div/div[1]/input": form_data["city"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[8]/div/div[1]/input": form_data["state"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[9]/div/div[1]/input": form_data["zip"]
         }
 
         for xpath, value in fields_to_fill.items():
             fill_field(driver, wait, xpath, value)
         
-        dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div/div[1]/select"
+        dropdown1_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[10]/div/div[1]/select"
         dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
         available_options = [o.text for o in dropdown1.options]
         print("Available options in dropdown:", available_options)
@@ -130,15 +131,15 @@ def handle_tucker_form(driver, url):
         print("Selected 'Other inquiries' from dropdown")
 
         # Fill request details
-        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div/div[1]/textarea"
+        details_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[11]/div/div[1]/textarea"
         details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
         details.clear()
         details.send_keys(form_data["message"])
         print("Filled request details")
 
         # Handle checkboxes
-        checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[13]/div/div[1]/div/div/div/div/div/div/div"
-        checkbox2_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[14]/div/div[1]/div/div/div/div/div/div/div"
+        checkbox1_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[14]/div/div[1]/div/div/div/div/div/div/div"
+        checkbox2_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[15]/div/div[1]/div/div/div/div/div/div/div"
         for checkbox_xpath in [checkbox1_xpath, checkbox2_xpath]:
             checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
             driver.execute_script("arguments[0].click();", checkbox)
@@ -148,13 +149,13 @@ def handle_tucker_form(driver, url):
         driver.save_screenshot("before_submit.png")
 
         # Submit form
-        submit_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button/div"
+        submit_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[4]/div/button/div"
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(15)
 
   
         # Extract confirmation message
@@ -171,6 +172,7 @@ def handle_tucker_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+
   
 def handle_forestparkga_form(driver, url):
     try:
@@ -2653,6 +2655,7 @@ def run_processing(urls, results, progress_queue, output_filename, save_path, co
     
 def resize_canvas(event):
     create_gradient(event.widget, event.width, event.height)
+    
 def update_progress_bar(progress_bar, progress_var, value, progress_label, county):
     progress_var.set(value)
     progress_label.config(text=f"Processing {county}...")
