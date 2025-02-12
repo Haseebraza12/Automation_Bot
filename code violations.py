@@ -156,7 +156,7 @@ def handle_tucker_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(15)
+        time.sleep(40)
 
   
         # Extract confirmation message
@@ -221,7 +221,7 @@ def handle_forestparkga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(15)
+        time.sleep(40)
 
         # Extract confirmation message
         try:
@@ -237,6 +237,7 @@ def handle_forestparkga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+    
 def handle_austellga_form(driver, url):
     try:
         driver.get(url)
@@ -284,7 +285,7 @@ def handle_austellga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(40)
 
         # Extract confirmation message
         try:
@@ -348,7 +349,7 @@ def handle_acworthga_form(driver, url):
         print("Clicked submit button")
 
         # Delay of 15 seconds after form submission
-        time.sleep(60)
+        time.sleep(40)
 
         # Extract confirmation message
         try:
@@ -364,7 +365,7 @@ def handle_acworthga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-
+    
 def handle_doravillega_form(driver, url):
     try:
         driver.get(url)
@@ -375,27 +376,27 @@ def handle_doravillega_form(driver, url):
 
         # Fill all fields
         fields_to_fill = {
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/input": form_data["name"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[2]/div[1]/input": form_data["phone"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[3]/div[1]/input": form_data["email"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div[1]/input": form_data["address"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div[1]/input": form_data["city"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div[1]/input": form_data["state"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div[1]/input": form_data["zip"]
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[1]/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[2]/div[1]/input": form_data["phone"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[3]/div[1]/input": form_data["email"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[4]/div[1]/input": form_data["address"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[5]/div[1]/input": form_data["city"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[6]/div[1]/input": form_data["state"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[7]/div[1]/input": form_data["zip"]
         }
 
         for xpath, value in fields_to_fill.items():
             fill_field(driver, wait, xpath, value)
 
         # Fill request details
-        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div[1]/textarea"
+        details_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[8]/div[1]/textarea"
         details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
         details.clear()
         details.send_keys(form_data["message"])
         print("Filled request details")
 
         # Handle dropdown selection
-        dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div[1]/select"
+        dropdown1_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[9]/div[1]/select"
         dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
         available_options = [o.text.strip() for o in dropdown1.options]
         print("Available options in dropdown:", available_options)
@@ -406,23 +407,16 @@ def handle_doravillega_form(driver, url):
         driver.save_screenshot("before_submit.png")
 
         # Submit form
-        submit_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button"
+        submit_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[4]/div/button/div"
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
-       # Delay of 15 seconds after form submission
         time.sleep(40)
-
         # Extract confirmation message
         try:
-            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your request reference number is')]").text
-            print(f"Confirmation message: {confirmation_message}")
-            security_key_match = re.search(r"Your security key is (\S+)", confirmation_message)
-            reference_number_match = re.search(r"Your request reference number is (\S+)", confirmation_message)
-            security_key = security_key_match.group(1) if security_key_match else ""
-            reference_number = reference_number_match.group(1) if reference_number_match else ""
-            if not security_key or not reference_number:
-                print("Confirmation message found but could not extract reference number or security key")
+            confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Your security key is')]").text
+            security_key = re.search(r"Your security key is (\S+)", confirmation_message).group(1)
+            reference_number = re.search(r"Your request reference number is (\S+)", confirmation_message).group(1)
             return {"status": "Success", "confirmation": "Form submitted", "reference_number": reference_number, "security_key": security_key}
         except NoSuchElementException:
             print("Confirmation message not found")
@@ -432,7 +426,7 @@ def handle_doravillega_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-
+    
 def handle_albanyga_form(driver, url):
     try:
         driver.get(url)
