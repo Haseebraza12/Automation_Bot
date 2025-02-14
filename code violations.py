@@ -787,20 +787,20 @@ def handle_tyronega_form(driver, url):
 
         # Fill all fields
         fields_to_fill = {
-            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[6]/div/div[1]/input": form_data["name"],
-            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[8]/div/div[1]/input": form_data["email"],
-            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[9]/div/div[1]/input": form_data["phone"],
-            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[10]/div/div[1]/input": form_data["address"],
-            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[11]/div/div[1]/input": form_data["city"],
-            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[12]/div/div[1]/input": form_data["state"],
-            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[13]/div/div[1]/input": form_data["zip"]
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[7]/div/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[9]/div/div[1]/input": form_data["email"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[10]/div/div[1]/input": form_data["phone"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[11]/div/div[1]/input": form_data["address"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[12]/div/div[1]/input": form_data["city"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[13]/div/div[1]/input": form_data["state"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[14]/div/div[1]/input": form_data["zip"]
         }
 
         for xpath, value in fields_to_fill.items():
             fill_field(driver, wait, xpath, value)
 
         # Handle checkbox selection
-        checkbox1_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[15]/div/div[1]/div/div/div/div/div/div/div"
+        checkbox1_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[16]/div/div[1]/div/div/div/div/div/div/div"
         checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox1_xpath)))
         driver.execute_script("arguments[0].click();", checkbox)
         print(f"Checked {checkbox1_xpath}")
@@ -830,7 +830,7 @@ def handle_tyronega_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-
+    
 def handle_forsythcountyga_form(driver, url):
     try:
         driver.get(url)
