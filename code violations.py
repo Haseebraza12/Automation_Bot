@@ -1052,7 +1052,6 @@ def handle_powderspringsga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
-    
 def handle_conyersga_form(driver, url):
     try:
         driver.get(url)
@@ -1063,27 +1062,27 @@ def handle_conyersga_form(driver, url):
 
         # Fill all fields
         fields_to_fill = {
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div[1]/input": form_data["name"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div[1]/input": form_data["phone"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div[1]/input": form_data["email"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[7]/div[1]/input": form_data["address"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[8]/div[1]/input": form_data["city"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[9]/div[1]/input": form_data["state"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div[1]/input": form_data["zip"]
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[4]/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[5]/div[1]/input": form_data["phone"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[6]/div[1]/input": form_data["email"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[7]/div[1]/input": form_data["address"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[8]/div[1]/input": form_data["city"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[9]/div[1]/input": form_data["state"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[10]/div[1]/input": form_data["zip"]
         }
 
         for xpath, value in fields_to_fill.items():
             fill_field(driver, wait, xpath, value)
 
         # Fill request details
-        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[11]/div[1]/textarea"
+        details_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[11]/div[1]/textarea"
         details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
         details.clear()
         details.send_keys(form_data["message"])
         print("Filled request details")
 
         # Handle checkbox selection
-        checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[12]/div[1]/div/div/div/div/div/div/div"
+        checkbox1_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[12]/div[1]/div/div/div/div/div/div/div"
         for checkbox_xpath in [checkbox1_xpath]:
             checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
             driver.execute_script("arguments[0].click();", checkbox)
@@ -1093,10 +1092,11 @@ def handle_conyersga_form(driver, url):
         driver.save_screenshot("before_submit.png")
 
         # Submit form
-        submit_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button"
+        submit_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[4]/div/button/div"
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
+        time.sleep(30)
 
         # Delay of 15 seconds after form submission
         time.sleep(40)
@@ -1114,6 +1114,7 @@ def handle_conyersga_form(driver, url):
         print(f"Error in form handling: {str(e)}")
         driver.save_screenshot("error_main.png")
         return {"status": "Failed", "error": str(e)}
+
     
 def handle_spaldingcountyga_form(driver, url):
     try:
