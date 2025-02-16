@@ -1,2 +1,26 @@
-url,status,confirmation,reference_number,security_key,error
-https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6,Success,Form submitted,,,
+url,status,confirmation,error
+https://www.cityofgriffin.com/services/open-records,Failed,,"Message: 
+Stacktrace:
+	GetHandleVerifier [0x007102D3+25139]
+	(No symbol) [0x0069B284]
+	(No symbol) [0x005704A3]
+	(No symbol) [0x005B8338]
+	(No symbol) [0x005B868B]
+	(No symbol) [0x00600F62]
+	(No symbol) [0x005DCF84]
+	(No symbol) [0x005FE6E1]
+	(No symbol) [0x005DCD36]
+	(No symbol) [0x005ABD29]
+	(No symbol) [0x005AD064]
+	GetHandleVerifier [0x00A1B193+3215603]
+	GetHandleVerifier [0x00A3230A+3310186]
+	GetHandleVerifier [0x00A2C522+3286146]
+	GetHandleVerifier [0x007A9CD0+654384]
+	(No symbol) [0x006A460D]
+	(No symbol) [0x006A14F8]
+	(No symbol) [0x006A1697]
+	(No symbol) [0x00693D70]
+	BaseThreadInitThunk [0x75A4FCC9+25]
+	RtlGetAppContainerNamedObjectPath [0x76F782AE+286]
+	RtlGetAppContainerNamedObjectPath [0x76F7827E+238]
+"

@@ -2214,8 +2214,6 @@ def process_form(url,retries=1):
                 result = handle_alpharettaga_form(driver, url)
             elif url == "https://norcrossga.justfoia.com/Forms/Launch/2da76d30-7849-4d56-b182-ef68865e40f6":
                 result = handle_norcrossga_form(driver, url)
-            elif url == "https://www.cityofgriffin.com/services/open-records":
-                result = handle_cityofgriffin_form(driver, url)
             elif url == "https://henrycounty-services.app.transform.civicplus.com/forms/34175":
                 result = handle_henrycounty_form(driver, url)
             elif url == "https://fayettecountyga.gov/administration/open-records-request":
@@ -2730,8 +2728,7 @@ if __name__ == "__main__":
             "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
         ],
         "Spalding County": [
-            "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-            "https://www.cityofgriffin.com/services/open-records"
+            "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
         ]
     }
     

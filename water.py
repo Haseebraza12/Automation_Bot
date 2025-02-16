@@ -1851,8 +1851,6 @@ def process_form(url,retries=1):
                 result = handle_roswellga_form(driver, url)
             elif url == "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb":
                 result = handle_conyersga_form(driver, url)
-            elif url == "https://www.cityofgriffin.com/services/open-records":
-                result = handle_cityofgriffin_form(driver, url)
             elif url == "https://henrycounty-services.app.transform.civicplus.com/forms/34175":
                 result = handle_henrycounty_form(driver, url)
             elif url == "https://fs6.formsite.com/mAFRD/jiupubq3at/index.html":
@@ -2339,8 +2337,7 @@ if __name__ == "__main__":
         "https://conyersga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
     ],
     "Spalding County": [
-        "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb",
-        "https://www.cityofgriffin.com/services/open-records"
+        "https://spaldingcountyga.justfoia.com/Forms/Launch/d705cbd6-1396-49b7-939e-8d86c5a87deb"
     ]
 }
 
