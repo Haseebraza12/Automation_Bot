@@ -2164,24 +2164,24 @@ def handle_duluthga_form(driver, url):
 
         # Fill all fields
         fields_to_fill = {
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[4]/div[1]/input": form_data["name"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[5]/div[1]/input": form_data["phone"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[6]/div[1]/input": form_data["email"],
-            "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[3]/div[1]/input": form_data["date"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[4]/div[1]/input": form_data["name"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[5]/div[1]/input": form_data["phone"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[6]/div[1]/input": form_data["email"],
+            "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[3]/div[1]/input": form_data["date"],
         }
 
         for xpath, value in fields_to_fill.items():
             fill_field(driver, wait, xpath, value)
 
         # Fill request details
-        details_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[1]/div[1]/textarea"
+        details_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[1]/div[1]/textarea"
         details = wait.until(EC.presence_of_element_located((By.XPATH, details_xpath)))
         details.clear()
         details.send_keys(form_data["message"])
         print("Filled request details")
 
         # Handle dropdown selection
-        dropdown1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[10]/div[1]/select"
+        dropdown1_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[10]/div[1]/select"
         dropdown1 = Select(wait.until(EC.presence_of_element_located((By.XPATH, dropdown1_xpath))))
         available_options = [o.text.strip() for o in dropdown1.options]
         print("Available options in dropdown:", available_options)
@@ -2189,7 +2189,7 @@ def handle_duluthga_form(driver, url):
         print("Selected dropdown option")
 
         # Handle checkbox selection
-        checkbox1_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[2]/div/div[2]/div[1]/div/div/div/div/div/div/div"
+        checkbox1_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[2]/div/div[2]/div[1]/div/div/div/div/div/div/div"
         for checkbox_xpath in [checkbox1_xpath]:
             checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, checkbox_xpath)))
             driver.execute_script("arguments[0].click();", checkbox)
@@ -2199,7 +2199,7 @@ def handle_duluthga_form(driver, url):
         driver.save_screenshot("before_submit.png")
 
         # Submit form
-        submit_xpath = "/html/body/div[1]/div[2]/main/div/div[1]/form/div[4]/div/button/div"
+        submit_xpath = "/html/body/div[1]/div[2]/div[1]/form/main/div/div[4]/div/button/div"
         submit_button = wait.until(EC.element_to_be_clickable((By.XPATH, submit_xpath)))
         driver.execute_script("arguments[0].click();", submit_button)
         print("Clicked submit button")
